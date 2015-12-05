@@ -11,32 +11,22 @@ public class CountQuantityOfFiles {
 
 	public static void main(String[] args) {
 
-		HashMap<String, Integer> map = new HashMap<String, Integer>();
+		String folderName = "/Users/Myron/Documents/资料/施红黎/SHL";
+		File allFile = new File(folderName);
+		File[] listOfAllFiles = allFile.listFiles();
+		List<String> subFolders = new ArrayList<String>();
 
-		List<String> xmlFileName = new ArrayList<String>();
-		List<String> folders = new ArrayList<String>();
-
-		String folderName = "/Users/Myron/Downloads/SHL";
-		File othersFolder = new File(folderName);
-		File[] listOfFilesOthers = othersFolder.listFiles();
-
-		for (int i = 0; i < listOfFilesOthers.length; i++) {
-			if (listOfFilesOthers[i].isFile()
-					&& FilenameUtils.getExtension(
-							listOfFilesOthers[i].getPath()).equals("xml")) {
-				xmlFileName.add(listOfFilesOthers[i].getName());
-			} else if (listOfFilesOthers[i].isDirectory()) {
-				folders.add(listOfFilesOthers[i].getName());
+		for (int i = 0; i < listOfAllFiles.length; i++) {
+			if (listOfAllFiles[i].isDirectory()) {
+				subFolders.add(listOfAllFiles[i].getName());
 			}
 		}
 
-		for (String folder : folders) {
+		for (String folder : subFolders) {
 
 			String subFolder = folderName + "/" + folder;
-
 			File subFolderFile = new File(subFolder);
 			File[] listOfFiles = subFolderFile.listFiles();
-
 			List<String> xmlFiles = new ArrayList<String>();
 
 			for (int i = 0; i < listOfFiles.length; i++) {
@@ -44,15 +34,13 @@ public class CountQuantityOfFiles {
 						&& FilenameUtils.getExtension(listOfFiles[i].getPath())
 								.equals("xml")) {
 					xmlFiles.add(listOfFiles[i].getName());
-					System.out.println(listOfFiles[i].getName());
 				} else if (listOfFiles[i].isDirectory()) {
-					folders.add(listOfFiles[i].getName());
+					System.out.println("Directory " + listOfFiles[i].getName());
 				}
 			}
 
-			System.out.println(folder + ": " + xmlFiles.size());
+			System.out.println("Folder: " + folder + " Number of XML files: " + xmlFiles.size());
+
 		}
-
 	}
-
 }
