@@ -1,8 +1,10 @@
 package analysing_CSV_Datasets;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
@@ -16,7 +18,7 @@ public class Extract_Stop_Times_Data {
 
 	public static void main(String[] args) throws IOException, ParseException {
 
-		String csv_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/stop_times1.csv";
+		String csv_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/stop_times.csv";
 		FileInputStream fstream = new FileInputStream(csv_file);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -26,17 +28,30 @@ public class Extract_Stop_Times_Data {
 
 		while ((strLine = br.readLine()) != null) {
 
+			// System.out.println(strLine);
+
 			String[] splitStr = strLine.split(",");
 
 			Stop_Times st = new Stop_Times();
 			st.setTrip_id(splitStr[0].substring(1, splitStr[0].length() - 1));
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-			Date date1 = simpleDateFormat.parse(splitStr[1].substring(1,
-					splitStr[1].length() - 1));
-			st.setArrival_time(date1);
-			Date date2 = simpleDateFormat.parse(splitStr[2].substring(1,
-					splitStr[2].length() - 1));
-			st.setDeparture_time(date2);
+			if (!splitStr[1].substring(1, splitStr[1].length() - 1).equals("")) {
+				Date date1 = simpleDateFormat.parse(splitStr[1].substring(1,
+						splitStr[1].length() - 1));
+				st.setArrival_time(date1);
+			} else {
+				st.setArrival_time(list.get(list.size() - 1).getArrival_time());
+				System.out.println(strLine);
+			}
+			if (!splitStr[2].substring(1, splitStr[2].length() - 1).equals("")) {
+				Date date2 = simpleDateFormat.parse(splitStr[2].substring(1,
+						splitStr[2].length() - 1));
+				st.setDeparture_time(date2);
+			} else {
+				st.setDeparture_time(list.get(list.size() - 1)
+						.getDeparture_time());
+				System.out.println(strLine);
+			}
 			st.setStop_id(splitStr[3].substring(1, splitStr[3].length() - 1));
 			st.setStop_sequence(Integer.parseInt(splitStr[4].substring(1,
 					splitStr[4].length() - 1)));
@@ -45,15 +60,15 @@ public class Extract_Stop_Times_Data {
 			st.setPickup_type(splitStr[6].substring(1, splitStr[6].length() - 1));
 			st.setDrop_off_type(splitStr[7].substring(1,
 					splitStr[7].length() - 1));
-			if(splitStr[8].substring(
-					1, splitStr[8].length() - 1) != null){
-				st.setShape_dist_traveled(Double.parseDouble(splitStr[8].substring(
-						1, splitStr[8].length() - 1)));
-			}else{
-				st.setShape_dist_traveled(0);
-				System.out.println("AAAAAAAAA");
+			if (!splitStr[8].substring(1, splitStr[8].length() - 1).equals("")) {
+				st.setShape_dist_traveled(Double.parseDouble(splitStr[8]
+						.substring(1, splitStr[8].length() - 1)));
+			} else {
+				st.setShape_dist_traveled(list.get(list.size() - 1)
+						.getShape_dist_traveled());
+				System.out.println(strLine);
 			}
-			
+
 			list.add(st);
 		}
 
@@ -108,12 +123,23 @@ public class Extract_Stop_Times_Data {
 
 		DecimalFormat df = new DecimalFormat("#.##");
 
+		List<String> results = new ArrayList<String>();
+
 		for (int i = 0; i < averageVelocityList.size(); i++) {
 			double v = averageVelocityList.get(i);
 			String route = routeAndBusNumberList.get(i).get(0);
 			String busNumber = routeAndBusNumberList.get(i).get(1);
-			System.out.println("Route: " + route + " Bus Number: " + busNumber
+			String result = ("Route: " + route + " Bus Number: " + busNumber
 					+ " Average Velocity: " + df.format(v) + "km/h");
+			results.add(result);
+			System.out.println(result);
 		}
+		
+		String resultsPath = "Stop_Times_Analysis_Results.txt";
+		FileWriter fw = new FileWriter(resultsPath);
+		BufferedWriter bw = new BufferedWriter(fw);
+		bw.write(results);
+		bw.close();
+
 	}
 }
