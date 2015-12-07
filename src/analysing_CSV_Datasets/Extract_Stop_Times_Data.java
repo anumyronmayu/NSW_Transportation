@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,8 +45,15 @@ public class Extract_Stop_Times_Data {
 			st.setPickup_type(splitStr[6].substring(1, splitStr[6].length() - 1));
 			st.setDrop_off_type(splitStr[7].substring(1,
 					splitStr[7].length() - 1));
-			st.setShape_dist_traveled(Double.parseDouble(splitStr[8].substring(
-					1, splitStr[8].length() - 1)));
+			if(splitStr[8].substring(
+					1, splitStr[8].length() - 1) != null){
+				st.setShape_dist_traveled(Double.parseDouble(splitStr[8].substring(
+						1, splitStr[8].length() - 1)));
+			}else{
+				st.setShape_dist_traveled(0);
+				System.out.println("AAAAAAAAA");
+			}
+			
 			list.add(st);
 		}
 
@@ -82,7 +88,8 @@ public class Extract_Stop_Times_Data {
 				ArrayList<String> routeAndBusNumber = new ArrayList<String>();
 
 				String[] splitStr = st.getTrip_id().split("-");
-				routeAndBusNumber.add(splitStr[0].substring(5, 6));
+				String[] splitStr1 = splitStr[0].split("\\.");
+				routeAndBusNumber.add(splitStr1[2]);
 				routeAndBusNumber.add(splitStr[1]);
 				routeAndBusNumberList.add(routeAndBusNumber);
 				velocities.clear();

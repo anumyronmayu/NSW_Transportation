@@ -46,7 +46,7 @@ public class ExtractData {
 
 		TransXChange txc = (TransXChange) obj;
 		
-		
+		System.out.println(txc.getCreationDateTime());
 
 		/*
 		System.out.println(txc.getCreationDateTime());
