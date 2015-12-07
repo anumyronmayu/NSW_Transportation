@@ -45,7 +45,10 @@ public class ExtractData {
 		Object obj = xs.fromXML(reqXml);
 
 		TransXChange txc = (TransXChange) obj;
+		
+		
 
+		/*
 		System.out.println(txc.getCreationDateTime());
 		System.out.println(txc.getModificationDateTime());
 		System.out.println(txc.getModification());
@@ -149,6 +152,7 @@ public class ExtractData {
 		System.out.println(txc.getServices().get(0).getServiceCode());
 		System.out.println(txc.getServices().get(0).getPrivateCode());
 		System.out.println(txc.getServices().get(0).getLines().get(0).getId());
+		*/
+		
 	}
-
 }
