@@ -1,7 +1,6 @@
 package analysing_XML_Datasets;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
 @XStreamAlias("NptgLocalities")
 public class NptgLocalities {

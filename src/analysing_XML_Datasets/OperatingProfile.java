@@ -16,4 +16,13 @@ public class OperatingProfile {
 		RegularDayType = regularDayType;
 	}
 
+	public SpecialDaysOperation getSpecialDaysOperation() {
+		return SpecialDaysOperation;
+	}
+
+	public void setSpecialDaysOperation(
+			SpecialDaysOperation specialDaysOperation) {
+		SpecialDaysOperation = specialDaysOperation;
+	}
+
 }
