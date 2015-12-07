@@ -27,26 +27,29 @@ public class TransXChange {
 	private String SchemaVersion;
 
 	@XStreamAsAttribute
+	@XStreamAlias("xml:lang")
 	private String xml_lang;
 
 	@XStreamAsAttribute
+	@XStreamAlias("xsi:schemaLocation")
 	private String xsi_schemaLocation;
 
 	@XStreamAsAttribute
+	@XStreamAlias("xmlns:xsi")
 	private String xmlns_xsi;
 
 	@XStreamAsAttribute
 	private String xmlns;
 
-	private NptgLocalities nptgLocalities;
+	private NptgLocalities NptgLocalities;
 
 	private List<StopPoint> StopPoints;
 
-	private List<RouteSection> RouteSections;
+	private RouteSections RouteSections;
 
 	private List<Route> Routes;
 
-	private List<JourneyPatternSection> JourneyPatternSections;
+	private JourneyPatternSections JourneyPatternSections;
 
 	private List<Operator> Operators;
 
@@ -135,11 +138,11 @@ public class TransXChange {
 	}
 
 	public NptgLocalities getNptgLocalities() {
-		return nptgLocalities;
+		return NptgLocalities;
 	}
 
 	public void setNptgLocalities(NptgLocalities nptgLocalities) {
-		this.nptgLocalities = nptgLocalities;
+		this.NptgLocalities = nptgLocalities;
 	}
 
 	public List<StopPoint> getStopPoints() {
@@ -150,11 +153,11 @@ public class TransXChange {
 		StopPoints = stopPoints;
 	}
 
-	public List<RouteSection> getRouteSections() {
+	public RouteSections getRouteSections() {
 		return RouteSections;
 	}
 
-	public void setRouteSections(List<RouteSection> routeSections) {
+	public void setRouteSections(RouteSections routeSections) {
 		RouteSections = routeSections;
 	}
 
@@ -166,12 +169,12 @@ public class TransXChange {
 		Routes = routes;
 	}
 
-	public List<JourneyPatternSection> getJourneyPatternSections() {
+	public JourneyPatternSections getJourneyPatternSections() {
 		return JourneyPatternSections;
 	}
 
 	public void setJourneyPatternSections(
-			List<JourneyPatternSection> journeyPatternSections) {
+			JourneyPatternSections journeyPatternSections) {
 		JourneyPatternSections = journeyPatternSections;
 	}
 

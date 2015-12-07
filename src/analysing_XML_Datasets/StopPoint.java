@@ -9,14 +9,14 @@ public class StopPoint {
 	@XStreamAsAttribute
 	private String CreationDateTime;
 
-	private AtcoCode atcoCode;
-	private PrivateCode privateCode;
-	private Descriptor descriptor;
-	private AlternativeDescriptors alternativeDescriptors;
-	private Place place;
-	private StopClassification stopClassification;
-	private AdministrativeAreaRef administrativeAreaRef;
-	private Notes notes;
+	private String AtcoCode;
+	private String PrivateCode;
+	private Descriptor Descriptor;
+	private AlternativeDescriptors AlternativeDescriptors;
+	private Place Place;
+	private StopClassification StopClassification;
+	private String AdministrativeAreaRef;
+	private String Notes;
 
 	public String getCreationDateTime() {
 		return CreationDateTime;
@@ -26,70 +26,69 @@ public class StopPoint {
 		CreationDateTime = creationDateTime;
 	}
 
-	public AtcoCode getAtcoCode() {
-		return atcoCode;
+	public String getAtcoCode() {
+		return AtcoCode;
 	}
 
-	public void setAtcoCode(AtcoCode atcoCode) {
-		this.atcoCode = atcoCode;
+	public void setAtcoCode(String atcoCode) {
+		AtcoCode = atcoCode;
 	}
 
-	public PrivateCode getPrivateCode() {
-		return privateCode;
+	public String getPrivateCode() {
+		return PrivateCode;
 	}
 
-	public void setPrivateCode(PrivateCode privateCode) {
-		this.privateCode = privateCode;
+	public void setPrivateCode(String privateCode) {
+		PrivateCode = privateCode;
 	}
 
 	public Descriptor getDescriptor() {
-		return descriptor;
+		return Descriptor;
 	}
 
 	public void setDescriptor(Descriptor descriptor) {
-		this.descriptor = descriptor;
+		Descriptor = descriptor;
 	}
 
 	public AlternativeDescriptors getAlternativeDescriptors() {
-		return alternativeDescriptors;
+		return AlternativeDescriptors;
 	}
 
 	public void setAlternativeDescriptors(
 			AlternativeDescriptors alternativeDescriptors) {
-		this.alternativeDescriptors = alternativeDescriptors;
+		AlternativeDescriptors = alternativeDescriptors;
 	}
 
 	public Place getPlace() {
-		return place;
+		return Place;
 	}
 
 	public void setPlace(Place place) {
-		this.place = place;
+		Place = place;
 	}
 
 	public StopClassification getStopClassification() {
-		return stopClassification;
+		return StopClassification;
 	}
 
 	public void setStopClassification(StopClassification stopClassification) {
-		this.stopClassification = stopClassification;
+		StopClassification = stopClassification;
 	}
 
-	public AdministrativeAreaRef getAdministrativeAreaRef() {
-		return administrativeAreaRef;
+	public String getAdministrativeAreaRef() {
+		return AdministrativeAreaRef;
 	}
 
-	public void setAdministrativeAreaRef(
-			AdministrativeAreaRef administrativeAreaRef) {
-		this.administrativeAreaRef = administrativeAreaRef;
+	public void setAdministrativeAreaRef(String administrativeAreaRef) {
+		AdministrativeAreaRef = administrativeAreaRef;
 	}
 
-	public Notes getNotes() {
-		return notes;
+	public String getNotes() {
+		return Notes;
 	}
 
-	public void setNotes(Notes notes) {
-		this.notes = notes;
+	public void setNotes(String notes) {
+		Notes = notes;
 	}
 
 }

@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("RouteSection")
-public class RouteSection {
+@XStreamAlias("RouteSections")
+public class RouteSections {
 
 	private List<RouteLink> RouteSection;
 
