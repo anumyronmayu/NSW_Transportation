@@ -1,5 +1,7 @@
 package analysing_XML_Datasets;
 
+import java.util.List;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 
@@ -12,6 +14,8 @@ public class From {
 	private String StopPointRef;
 	private String Activity;
 	private String TimingStatus;
+
+	private List<Note> Notes;
 
 	public String getStopPointRef() {
 		return StopPointRef;
@@ -43,6 +47,14 @@ public class From {
 
 	public void setTimingStatus(String timingStatus) {
 		TimingStatus = timingStatus;
+	}
+
+	public List<Note> getNotes() {
+		return Notes;
+	}
+
+	public void setNotes(List<Note> notes) {
+		Notes = notes;
 	}
 
 }

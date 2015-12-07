@@ -1,7 +1,6 @@
 package analysing_XML_Datasets;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
@@ -12,11 +11,10 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 public class ExtractData {
 
 	/*
-	 * Assumption: 
-	 * 1. Each RouteSections has only one RouteSection 
-	 * 2. RouteSection attribute id cannot be accessed
-	 * 3. Each JourneyPatternSections has only one JourneyPatternSection
-	 * 4. JourneyPatternSection attribute id cannot be accessed
+	 * Assumption: 1. Each RouteSections has only one RouteSection 2.
+	 * RouteSection attribute id cannot be accessed 3. Each
+	 * JourneyPatternSections has only one JourneyPatternSection 4.
+	 * JourneyPatternSection attribute id cannot be accessed
 	 */
 
 	public static void main(String[] args) throws IOException {
@@ -34,13 +32,15 @@ public class ExtractData {
 				AlternativeDescriptors.class, Place.class, Location.class,
 				StopClassification.class, OffStreet.class, Rail.class,
 				RouteSections.class, RouteLink.class, From.class, To.class,
-				Route.class, JourneyPatternSections.class, JourneyPatternTimingLink.class,
-				Operator.class,
-				Service.class, VehicleJourney.class, AtcoCode.class,
-				PrivateCode.class, Descriptor.class,
-				AlternativeDescriptors.class, Place.class,
-				StopClassification.class, AdministrativeAreaRef.class,
-				Notes.class });
+				Route.class, JourneyPatternSections.class,
+				JourneyPatternTimingLink.class, Operator.class, Service.class,
+				Line.class, OperatingPeriod.class, OperatingProfile.class,
+				RegularDayType.class, DaysOfWeek.class,
+				SpecialDaysOperation.class, DaysOfOperation.class,
+				DateRange.class, ServiceClassification.class,
+				OtherService.class, StopRequirements.class, Note.class,
+				StandardService.class, JourneyPattern.class, Operational.class,
+				VehicleType.class, VehicleJourney.class });
 
 		Object obj = xs.fromXML(reqXml);
 
@@ -88,33 +88,67 @@ public class ExtractData {
 
 		System.out.println(txc.getRouteSections().getRouteSection().get(0)
 				.getId());
-		System.out.println(txc.getRouteSections().getRouteSection().get(0).getDirection());
-		System.out.println(txc.getRouteSections().getRouteSection().get(0).getFrom().getStopPointRef());
-		System.out.println(txc.getRouteSections().getRouteSection().get(0).getTo().getStopPointRef());
-		
+		System.out.println(txc.getRouteSections().getRouteSection().get(0)
+				.getDirection());
+		System.out.println(txc.getRouteSections().getRouteSection().get(0)
+				.getFrom().getStopPointRef());
+		System.out.println(txc.getRouteSections().getRouteSection().get(0)
+				.getTo().getStopPointRef());
+
 		System.out.println(txc.getRoutes().get(0).getId());
 		System.out.println(txc.getRoutes().get(0).getPrivateCode());
 		System.out.println(txc.getRoutes().get(0).getDescription());
 		System.out.println(txc.getRoutes().get(0).getRouteSectionRef());
-		
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getId());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getRouteLinkRef());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getRunTime());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getFrom().getActivity());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getFrom().getSequenceNumber());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getFrom().getStopPointRef());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getFrom().getTimingStatus());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getTo().getActivity());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getTo().getSequenceNumber());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getTo().getStopPointRef());
-		System.out.println(txc.getJourneyPatternSections().getJourneyPatternSection().get(0).getTo().getTimingStatus());
-		
+
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getId());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getRouteLinkRef());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getRunTime());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getFrom().getActivity());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getFrom()
+				.getSequenceNumber());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getFrom().getStopPointRef());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getFrom().getTimingStatus());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getTo().getActivity());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getTo().getSequenceNumber());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getTo().getStopPointRef());
+		System.out.println(txc.getJourneyPatternSections()
+				.getJourneyPatternSection().get(0).getTo().getTimingStatus());
+
 		System.out.println(txc.getOperators().get(0).getId());
 		System.out.println(txc.getOperators().get(0).getOperatorCode());
 		System.out.println(txc.getOperators().get(0).getOperatorShortName());
-		System.out.println(txc.getOperators().get(0).getOperatorNameOnLicence());
+		System.out
+				.println(txc.getOperators().get(0).getOperatorNameOnLicence());
 		System.out.println(txc.getOperators().get(0).getTradingName());
-		
+
+		System.out.println(txc.getVehicleJourneys().get(0).getPrivateCode());
+		System.out.println(txc.getVehicleJourneys().get(0)
+				.getDestinationDisplay());
+		System.out.println(txc.getVehicleJourneys().get(0)
+				.getVehicleJourneyCode());
+		System.out.println(txc.getVehicleJourneys().get(0).getServiceRef());
+		System.out.println(txc.getVehicleJourneys().get(0).getLineRef());
+		System.out.println(txc.getVehicleJourneys().get(0)
+				.getJourneyPatternRef());
+		System.out.println(txc.getVehicleJourneys().get(0).getDepartureTime());
+		System.out.println(txc.getVehicleJourneys().get(0).getOperational()
+				.getVehicleType().getVehicleTypeCode());
+		System.out.println(txc.getVehicleJourneys().get(0).getOperational()
+				.getVehicleType().getDescription());
+
+		System.out.println(txc.getServices().get(0).getServiceCode());
+		System.out.println(txc.getServices().get(0).getPrivateCode());
+		System.out.println(txc.getServices().get(0).getLines().get(0).getId());
 	}
 
 }
