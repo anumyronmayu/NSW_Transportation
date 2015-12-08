@@ -22,7 +22,8 @@ public class Extract_Stop_Times_Data {
 
 	public static void main(String[] args) throws IOException, ParseException {
 
-		String csv_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/stop_times.csv";
+		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
+		String csv_file = folderName + "stop_times1.csv";
 		FileInputStream fstream = new FileInputStream(csv_file);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -135,10 +136,10 @@ public class Extract_Stop_Times_Data {
 
 		List<String> results = new ArrayList<String>();
 
-		makeDir("/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times");
+		makeDir(folderName + "Analysis_Results/Stop_Times");
 
-		FileWriter writer = new FileWriter(
-				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/Stop_Times_Analysis_Results.txt");
+		FileWriter writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times/Stop_Times_Analysis_Results.txt");
 		for (int i = 0; i < averageVelocityList.size(); i++) {
 			double v = averageVelocityList.get(i);
 			String route = routeAndBusNumberList.get(i).get(0);
@@ -151,22 +152,23 @@ public class Extract_Stop_Times_Data {
 		}
 		writer.close();
 
-		writer = new FileWriter(
-				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/UnclassifiedArrivalTime.txt");
+		writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times/UnclassifiedArrivalTime.txt");
 		for (String s : unclassifiedArrivalTime) {
 			writer.write(s + "\n");
 		}
 		writer.close();
 
-		writer = new FileWriter(
-				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/UnclassifiedDepartureTime.txt");
+		writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times/UnclassifiedDepartureTime.txt");
 		for (String s : unclassifiedDepartureTime) {
 			writer.write(s + "\n");
 		}
 		writer.close();
 
 		writer = new FileWriter(
-				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/UnclassifiedShapeDistTraveled.txt");
+				folderName
+						+ "Analysis_Results/Stop_Times/UnclassifiedShapeDistTraveled.txt");
 		for (String s : unclassifiedShapeDistTraveled) {
 			writer.write(s + "\n");
 		}
