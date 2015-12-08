@@ -23,7 +23,7 @@ public class Extract_Stop_Times_Data {
 	public static void main(String[] args) throws IOException, ParseException {
 
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
-		String csv_file = folderName + "stop_times1.csv";
+		String csv_file = folderName + "stop_times.csv";
 		FileInputStream fstream = new FileInputStream(csv_file);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
