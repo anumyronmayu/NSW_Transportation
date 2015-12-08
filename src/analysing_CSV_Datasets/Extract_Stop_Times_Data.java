@@ -1,8 +1,8 @@
 package analysing_CSV_Datasets;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,6 +16,10 @@ import java.util.List;
 
 public class Extract_Stop_Times_Data {
 
+	private static void makeDir(String dir) {
+		new File(dir).mkdirs();
+	}
+
 	public static void main(String[] args) throws IOException, ParseException {
 
 		String csv_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/stop_times.csv";
@@ -25,6 +29,9 @@ public class Extract_Stop_Times_Data {
 		String strLine = br.readLine();
 
 		List<Stop_Times> list = new ArrayList<Stop_Times>();
+		List<String> unclassifiedArrivalTime = new ArrayList<String>();
+		List<String> unclassifiedDepartureTime = new ArrayList<String>();
+		List<String> unclassifiedShapeDistTraveled = new ArrayList<String>();
 
 		while ((strLine = br.readLine()) != null) {
 
@@ -41,6 +48,7 @@ public class Extract_Stop_Times_Data {
 				st.setArrival_time(date1);
 			} else {
 				st.setArrival_time(list.get(list.size() - 1).getArrival_time());
+				unclassifiedArrivalTime.add(strLine);
 				System.out.println(strLine);
 			}
 			if (!splitStr[2].substring(1, splitStr[2].length() - 1).equals("")) {
@@ -50,6 +58,7 @@ public class Extract_Stop_Times_Data {
 			} else {
 				st.setDeparture_time(list.get(list.size() - 1)
 						.getDeparture_time());
+				unclassifiedDepartureTime.add(strLine);
 				System.out.println(strLine);
 			}
 			st.setStop_id(splitStr[3].substring(1, splitStr[3].length() - 1));
@@ -66,6 +75,7 @@ public class Extract_Stop_Times_Data {
 			} else {
 				st.setShape_dist_traveled(list.get(list.size() - 1)
 						.getShape_dist_traveled());
+				unclassifiedShapeDistTraveled.add(strLine);
 				System.out.println(strLine);
 			}
 
@@ -125,6 +135,10 @@ public class Extract_Stop_Times_Data {
 
 		List<String> results = new ArrayList<String>();
 
+		makeDir("/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times");
+
+		FileWriter writer = new FileWriter(
+				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/Stop_Times_Analysis_Results.txt");
 		for (int i = 0; i < averageVelocityList.size(); i++) {
 			double v = averageVelocityList.get(i);
 			String route = routeAndBusNumberList.get(i).get(0);
@@ -132,14 +146,31 @@ public class Extract_Stop_Times_Data {
 			String result = ("Route: " + route + " Bus Number: " + busNumber
 					+ " Average Velocity: " + df.format(v) + "km/h");
 			results.add(result);
-			System.out.println(result);
+			writer.write(result + "\n");
+			// System.out.println(result);
 		}
-		
-		String resultsPath = "Stop_Times_Analysis_Results.txt";
-		FileWriter fw = new FileWriter(resultsPath);
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(results);
-		bw.close();
+		writer.close();
+
+		writer = new FileWriter(
+				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/UnclassifiedArrivalTime.txt");
+		for (String s : unclassifiedArrivalTime) {
+			writer.write(s + "\n");
+		}
+		writer.close();
+
+		writer = new FileWriter(
+				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/UnclassifiedDepartureTime.txt");
+		for (String s : unclassifiedDepartureTime) {
+			writer.write(s + "\n");
+		}
+		writer.close();
+
+		writer = new FileWriter(
+				"/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stop_Times/UnclassifiedShapeDistTraveled.txt");
+		for (String s : unclassifiedShapeDistTraveled) {
+			writer.write(s + "\n");
+		}
+		writer.close();
 
 	}
 }
