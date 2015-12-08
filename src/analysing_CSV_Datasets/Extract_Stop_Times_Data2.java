@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Extract_Stop_Times_Data {
+public class Extract_Stop_Times_Data2 {
 
 	private static void makeDir(String dir) {
 		new File(dir).mkdirs();
