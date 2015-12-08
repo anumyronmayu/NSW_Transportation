@@ -44,7 +44,7 @@ public class PreProcessFiles {
 		FileWriter writer = new FileWriter(folderName
 				+ "Analysis_Results/stop_times_modified.csv");
 		for (String s : lines) {
-			writer.write(s);
+			writer.write(s + "\n");
 		}
 		writer.close();
 	}
