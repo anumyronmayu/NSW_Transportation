@@ -1,4 +1,4 @@
-package analysing_CSV_Datasets;
+package analysing_CSV_Datasets.Stop_Times;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -19,17 +19,17 @@ public class PreProcessFiles {
 		FileInputStream fstream = new FileInputStream(csv_file);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
-		String strLine = br.readLine();
+		String strLine;
+		String firstLine = br.readLine();
 		List<String> lines = new ArrayList<String>();
 
 		while ((strLine = br.readLine()) != null) {
 
-			String[] splitStr = strLine.split(",");
+			String[] splitStr = strLine.split("\",\"");
 
-			if (splitStr[1].substring(1, splitStr[1].length() - 1).equals("")
-					|| splitStr[2].substring(1, splitStr[2].length() - 1)
-							.equals("")
-					|| splitStr[8].substring(1, splitStr[8].length() - 1)
+			if (splitStr[1].equals("")
+					|| splitStr[2].equals("")
+					|| splitStr[8].substring(0, splitStr[8].length() - 1)
 							.equals("")) {
 
 				continue;
@@ -43,6 +43,7 @@ public class PreProcessFiles {
 
 		FileWriter writer = new FileWriter(folderName
 				+ "Analysis_Results/stop_times_modified.csv");
+		writer.write(firstLine + "\n");
 		for (String s : lines) {
 			writer.write(s + "\n");
 		}

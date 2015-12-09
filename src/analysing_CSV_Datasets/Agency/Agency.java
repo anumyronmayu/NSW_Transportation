@@ -1,4 +1,4 @@
-package analysing_CSV_Datasets;
+package analysing_CSV_Datasets.Agency;
 
 public class Agency {
 

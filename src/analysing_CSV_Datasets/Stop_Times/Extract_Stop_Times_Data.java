@@ -1,4 +1,4 @@
-package analysing_CSV_Datasets;
+package analysing_CSV_Datasets.Stop_Times;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
