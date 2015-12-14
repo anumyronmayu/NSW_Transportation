@@ -103,7 +103,8 @@ public class Extract_Stop_Times_Data2 {
 		writerCSV.close();
 		double average = sum / averageVelocityList.size();
 
-		System.out.println("Type: " + type + "Average Velocity: " + df.format(average) + "km/h");
+		System.out.println("Type: " + type + "Average Velocity: "
+				+ df.format(average) + "km/h");
 
 	}
 
