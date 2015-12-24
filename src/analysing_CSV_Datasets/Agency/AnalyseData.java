@@ -14,12 +14,12 @@ public class AnalyseData {
 
 			Agency agency = new Agency();
 
-			agency.setId(splitStr[0]);
+			agency.setId(splitStr[0].substring(1, splitStr[0].length()));
 			agency.setName(splitStr[1]);
 			agency.setUrl(splitStr[2]);
 			agency.setTimezone(splitStr[3]);
 			agency.setLang(splitStr[4]);
-			agency.setPhone(splitStr[5]);
+			agency.setPhone(splitStr[5].substring(0, splitStr[5].length() - 1));
 
 			agencyList.add(agency);
 

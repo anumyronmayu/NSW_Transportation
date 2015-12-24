@@ -22,7 +22,8 @@ public class AnalyseData {
 			trip.setTrip_headsign(splitStr[4]);
 			trip.setDirection_id(splitStr[5]);
 			trip.setBlock_id(splitStr[6]);
-			trip.setWheelchair_accessible(splitStr[7]);
+			trip.setWheelchair_accessible(splitStr[7].substring(0,
+					splitStr[7].length() - 1));
 
 			tripList.add(trip);
 
