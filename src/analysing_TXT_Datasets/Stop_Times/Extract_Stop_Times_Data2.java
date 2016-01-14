@@ -2,7 +2,6 @@ package analysing_TXT_Datasets.Stop_Times;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,12 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 import analysing_TXT_Datasets.Routes.*;
+import utilities.Utilities;
 
 public class Extract_Stop_Times_Data2 {
-
-	private static void makeDir(String dir) {
-		new File(dir).mkdirs();
-	}
 
 	private void analysingATypeOfNetwork(String folderName,
 			HashMap<String, ArrayList<Stop_Times>> map, List<String> typeList,
@@ -75,7 +71,7 @@ public class Extract_Stop_Times_Data2 {
 
 		List<String> results = new ArrayList<String>();
 
-		makeDir(folderName + "Analysis_Results/Stop_Times");
+		Utilities.makeDir(folderName + "Analysis_Results/Stop_Times");
 
 		FileWriter writer = new FileWriter(folderName
 				+ "Analysis_Results/Stop_Times/Stop_Times_Analysis_Results_"
@@ -110,7 +106,7 @@ public class Extract_Stop_Times_Data2 {
 
 	public static void main(String[] args) throws IOException, ParseException {
 
-		Extract_Stop_Times_Data2 obj = new Extract_Stop_Times_Data2();
+		Extract_Stop_Times_Data2 analyseData = new Extract_Stop_Times_Data2();
 
 		// route_id => type
 		Extract_Routes_Data routeData = new Extract_Routes_Data();
@@ -166,21 +162,21 @@ public class Extract_Stop_Times_Data2 {
 		br.close();
 
 		// trip_id => List<Stop_Times>
-		HashMap<String, ArrayList<Stop_Times>> map = new HashMap<String, ArrayList<Stop_Times>>();
+		HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap = new HashMap<String, ArrayList<Stop_Times>>();
 		for (int i = 0; i < list.size(); i++) {
 			Stop_Times st = list.get(i);
-			if (map.get(st.getTrip_id()) == null) {
+			if (tripIdToListOfStopTimesMap.get(st.getTrip_id()) == null) {
 				ArrayList<Stop_Times> stop_times_group = new ArrayList<Stop_Times>();
 				stop_times_group.add(st);
-				map.put(st.getTrip_id(), stop_times_group);
+				tripIdToListOfStopTimesMap.put(st.getTrip_id(), stop_times_group);
 			} else {
-				map.get(st.getTrip_id()).add(st);
+				tripIdToListOfStopTimesMap.get(st.getTrip_id()).add(st);
 			}
 		}
 
 		// trip_id => type
 		HashMap<String, String> typeMap = new HashMap<String, String>();
-		Set<Map.Entry<String, ArrayList<Stop_Times>>> entrySetTripID = map
+		Set<Map.Entry<String, ArrayList<Stop_Times>>> entrySetTripID = tripIdToListOfStopTimesMap
 				.entrySet();
 		for (Map.Entry<String, ArrayList<Stop_Times>> entry : entrySetTripID) {
 			String[] splitStr = entry.getKey().split("-");
@@ -228,9 +224,9 @@ public class Extract_Stop_Times_Data2 {
 				listOfSydneyBusesNetwork.add(entry.getKey());
 				break;
 			case "Regional Trains and Coaches Network":
-				if(true){
+				if (true) {
 					listOfRegionalTrainsandCoachesNetwork.add(entry.getKey());
-				}else{
+				} else {
 					listOfRegionalTrainsandCoachesNetwork2.add(entry.getKey());
 				}
 				break;
@@ -276,36 +272,36 @@ public class Extract_Stop_Times_Data2 {
 		}
 
 		// Analyzing SydneyBusesNetwork
-		obj.analysingATypeOfNetwork(folderName, map, listOfSydneyBusesNetwork,
-				"SydneyBusesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
+				listOfSydneyBusesNetwork, "SydneyBusesNetwork");
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfRegionalTrainsandCoachesNetwork,
 				"RegionalTrainsAndCoachesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map, listOfPrivatebusservices,
-				"PrivateBusServices");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
+				listOfPrivatebusservices, "PrivateBusServices");
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfIllawarraBusesNetwork, "IllawarraBusesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfBlueMountainsBusesNetwork, "BlueMountainsBusesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfCentralCoastBusesNetwork, "CentralCoastBusesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map, listOfTemporarybuses,
-				"Temporarybuses");
-		obj.analysingATypeOfNetwork(folderName, map, listOfHunterBusesNetwork,
-				"HunterBusesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map, listOfSydneyTrainsNetwork,
-				"SydneyTrainsNetwork");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
+				listOfTemporarybuses, "Temporarybuses");
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
+				listOfHunterBusesNetwork, "HunterBusesNetwork");
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
+				listOfSydneyTrainsNetwork, "SydneyTrainsNetwork");
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfSydneyFerriesNetwork, "SydneyFerriesNetwork");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfPrivateferryandfastferryservices,
 				"PrivateFerryAndFastFerryServices");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfSydneyLightRailNetwork, "SydneyLightRailNetwork");
-		obj.analysingATypeOfNetwork(folderName, map,
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
 				listOfIntercityTrainsNetwork, "IntercityTrainsNetwork");
-		obj.analysingATypeOfNetwork(folderName, map, listOfNewcastleFerries,
-				"NewCastleFerries");
+		analyseData.analysingATypeOfNetwork(folderName, tripIdToListOfStopTimesMap,
+				listOfNewcastleFerries, "NewCastleFerries");
 
 	}
 }

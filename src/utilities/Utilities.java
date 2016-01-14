@@ -2,6 +2,7 @@ package utilities;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utilities {
+	
+	public static void makeDir(String dir) {
+		new File(dir).mkdirs();
+	}
 
 	public static List<String> readFile(String file, boolean discardFirstLine)
 			throws IOException {
