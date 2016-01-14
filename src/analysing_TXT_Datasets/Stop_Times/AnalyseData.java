@@ -151,14 +151,17 @@ public class AnalyseData {
 	}
 
 	public void analysingATypeOfNetwork(String folderName,
-			HashMap<String, ArrayList<Stop_Times>> map, List<String> typeList,
-			String type) throws IOException {
+			HashMap<String, ArrayList<Stop_Times>> map,
+			List<String> tripIdForEachType, String type) throws IOException {
 
-		List<ArrayList<Double>> velocitiesListSydneyBusesNetwork = new ArrayList<ArrayList<Double>>();
-		List<ArrayList<String>> routeAndBusNumberListSydneyBusesNetwork = new ArrayList<ArrayList<String>>();
+		// list of velocities for all trip id
+		List<ArrayList<Double>> velocitiesList = new ArrayList<ArrayList<Double>>();
+		List<ArrayList<String>> routeAndBusNumberList = new ArrayList<ArrayList<String>>();
 
-		for (String s : typeList) {
+		for (String s : tripIdForEachType) {
+
 			ArrayList<Stop_Times> stop_times_group = map.get(s);
+			// velocities for a trip id
 			ArrayList<Double> velocities = new ArrayList<Double>();
 
 			for (int i = 1; i < stop_times_group.size(); i++) {
@@ -173,22 +176,25 @@ public class AnalyseData {
 				double v = d / time;
 				velocities.add(v);
 			}
-			velocitiesListSydneyBusesNetwork.add(velocities);
+
+			velocitiesList.add(velocities);
 
 			ArrayList<String> routeAndBusNumber = new ArrayList<String>();
 			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
 			String[] splitStr1 = splitStr[0].split("\\.");
+			routeAndBusNumber.add(splitStr1[0]);
 			routeAndBusNumber.add(splitStr1[2]);
 			if (splitStr.length == 4) {
 				routeAndBusNumber.add(splitStr[1]);
 			} else {
 				routeAndBusNumber.add(splitStr[1] + "-" + splitStr[2]);
 			}
-			routeAndBusNumberListSydneyBusesNetwork.add(routeAndBusNumber);
+			routeAndBusNumber.add(stop_times_group.get(0).getTrip_id());
+			routeAndBusNumberList.add(routeAndBusNumber);
 		}
 
 		List<Double> averageVelocityList = new ArrayList<Double>();
-		for (ArrayList<Double> velocitiesSequence : velocitiesListSydneyBusesNetwork) {
+		for (ArrayList<Double> velocitiesSequence : velocitiesList) {
 			double sumVelocity = 0;
 			for (double velocity : velocitiesSequence) {
 				sumVelocity += velocity;
@@ -208,24 +214,30 @@ public class AnalyseData {
 		FileWriter writerCSV = new FileWriter(folderName
 				+ "Analysis_Results/Stop_Times/Stop_Times_Analysis_Results_"
 				+ type + "_csv.csv");
+
 		writerCSV.write("\"Route\",\"BusNumber\",\"AverageVelocity\"\n");
+
 		double sum = 0;
+
 		for (int i = 0; i < averageVelocityList.size(); i++) {
 			double v = averageVelocityList.get(i);
 			sum += v;
-			String route = routeAndBusNumberListSydneyBusesNetwork.get(i)
-					.get(0);
-			String busNumber = routeAndBusNumberListSydneyBusesNetwork.get(i)
-					.get(1);
-			String result = ("Route: " + route + " Bus Number: " + busNumber
-					+ " Average Velocity: " + df.format(v) + "km/h");
+			String run = routeAndBusNumberList.get(i).get(0);
+			String route = routeAndBusNumberList.get(i).get(1);
+			String busNumber = routeAndBusNumberList.get(i).get(2);
+			String tripId = routeAndBusNumberList.get(i).get(3);
+			String result = ("Run: " + run + " Route: " + route
+					+ " Bus Number: " + busNumber + " Average Velocity: "
+					+ df.format(v) + "km/h");
 			results.add(result);
 			writer.write(result + "\n");
 			writerCSV.write("\"" + route + "\",\"" + busNumber + "\",\""
 					+ df.format(v) + "\"\n");
 		}
+
 		writer.close();
 		writerCSV.close();
+
 		double average = sum / averageVelocityList.size();
 
 		System.out.println("Type: " + type + " Average Velocity: "
