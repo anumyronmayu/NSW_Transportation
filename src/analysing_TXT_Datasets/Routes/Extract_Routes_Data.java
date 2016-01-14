@@ -25,9 +25,6 @@ public class Extract_Routes_Data {
 		String strLine;
 
 		List<Routes> routesList = new ArrayList<Routes>();
-		HashMap<String, ArrayList<Integer>> versionMap = new HashMap<String, ArrayList<Integer>>();
-		HashMap<String, String> typeMap = new HashMap<String, String>();
-		HashMap<String, String> typeMapWithVersionNumber = new HashMap<String, String>();
 
 		while ((strLine = br.readLine()) != null) {
 
@@ -63,6 +60,10 @@ public class Extract_Routes_Data {
 		}
 
 		br.close();
+
+		HashMap<String, ArrayList<Integer>> versionMap = new HashMap<String, ArrayList<Integer>>();
+		HashMap<String, String> typeMap = new HashMap<String, String>();
+		HashMap<String, String> typeMapWithVersionNumber = new HashMap<String, String>();
 
 		for (Routes route : routesList) {
 			if (versionMap.get(route.getRoute_id_part1()) == null) {
