@@ -9,8 +9,8 @@ public class App {
 
 	public static void main(String[] args) throws IOException {
 
-		String agency_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/calendar_dates.csv";
-		List<String> fileLines = Utilities.readFile(agency_CSV_file, true);
+		String routes_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/routes.csv";
+		List<String> fileLines = Utilities.readFile(routes_CSV_file, true);
 
 		AnalyseData obj = new AnalyseData();
 		List<Routes> routesList = obj.parseStrLines(fileLines);
