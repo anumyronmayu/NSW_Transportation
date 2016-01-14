@@ -21,7 +21,6 @@ public class Extract_Routes_Data {
 		FileInputStream fstream = new FileInputStream(csv_file);
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
-		String firstLine = br.readLine();
 		String strLine;
 
 		List<Routes> routesList = new ArrayList<Routes>();
