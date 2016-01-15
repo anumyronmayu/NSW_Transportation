@@ -165,12 +165,15 @@ public class AnalyseData {
 			ArrayList<Double> velocities = new ArrayList<Double>();
 
 			for (int i = 1; i < stop_times_group.size(); i++) {
+
 				double time = ((double) (stop_times_group.get(i)
 						.getArrival_time().getTime() - stop_times_group
 						.get(i - 1).getDeparture_time().getTime())) / 1000 / 60 / 60;// hour
+
 				if (time == 0) {
 					continue;
 				}
+
 				double d = (stop_times_group.get(i).getShape_dist_traveled() - stop_times_group
 						.get(i - 1).getShape_dist_traveled()) / 1000;
 				double v = d / time;
@@ -180,25 +183,44 @@ public class AnalyseData {
 			velocitiesList.add(velocities);
 
 			ArrayList<String> routeAndBusNumber = new ArrayList<String>();
+
 			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
 			String[] splitStr1 = splitStr[0].split("\\.");
+
 			routeAndBusNumber.add(splitStr1[0]);
 			routeAndBusNumber.add(splitStr1[2]);
+
 			if (splitStr.length == 4) {
 				routeAndBusNumber.add(splitStr[1]);
 			} else {
 				routeAndBusNumber.add(splitStr[1] + "-" + splitStr[2]);
 			}
+
 			routeAndBusNumber.add(stop_times_group.get(0).getTrip_id());
+
+			for (double speed : velocities) {
+				routeAndBusNumber.add(String.valueOf(speed));
+			}
+
 			routeAndBusNumberList.add(routeAndBusNumber);
 		}
 
+		int maxSequence = 0;
+
 		List<Double> averageVelocityList = new ArrayList<Double>();
+
 		for (ArrayList<Double> velocitiesSequence : velocitiesList) {
+
+			if (velocitiesSequence.size() > maxSequence) {
+				maxSequence = velocitiesSequence.size();
+			}
+
 			double sumVelocity = 0;
+
 			for (double velocity : velocitiesSequence) {
 				sumVelocity += velocity;
 			}
+
 			averageVelocityList.add(sumVelocity / velocitiesSequence.size());
 		}
 
@@ -215,24 +237,42 @@ public class AnalyseData {
 				+ "Analysis_Results/Stop_Times/Stop_Times_Analysis_Results_"
 				+ type + "_csv.csv");
 
-		writerCSV.write("\"Route\",\"BusNumber\",\"AverageVelocity\"\n");
+		writerCSV
+				.write("\"OperatorNumber\",\"RouteNumber\",\"Run\",\"AverageSpeed(km/h)\"");
+		for (int i = 0; i < maxSequence; i++) {
+			writerCSV.write(",\"s" + (i + 1) + "\"");
+		}
+		writerCSV.write("\n");
 
 		double sum = 0;
 
 		for (int i = 0; i < averageVelocityList.size(); i++) {
+
 			double v = averageVelocityList.get(i);
 			sum += v;
+
 			String run = routeAndBusNumberList.get(i).get(0);
 			String route = routeAndBusNumberList.get(i).get(1);
 			String busNumber = routeAndBusNumberList.get(i).get(2);
 			String tripId = routeAndBusNumberList.get(i).get(3);
-			String result = ("Run: " + run + " Route: " + route
-					+ " Bus Number: " + busNumber + " Average Velocity: "
+
+			// for 4 to size - 1
+			String result = ("Operator Number: " + route + " Route Number: "
+					+ busNumber + " Run: " + run + " Average Velocity: "
 					+ df.format(v) + "km/h");
+			for (int j = 4; j <= routeAndBusNumberList.get(i).size() - 1; j++) {
+				result += " s" + (j - 3) + ": "
+						+ routeAndBusNumberList.get(i).get(j);
+			}
 			results.add(result);
 			writer.write(result + "\n");
-			writerCSV.write("\"" + route + "\",\"" + busNumber + "\",\""
-					+ df.format(v) + "\"\n");
+
+			String csvString = "\"" + route + "\",\"" + busNumber + "\",\""
+					+ run + "\",\"" + df.format(v) + "\"";
+			for (int j = 4; j <= routeAndBusNumberList.get(i).size() - 1; j++) {
+				csvString += ",\"" + routeAndBusNumberList.get(i).get(j) + "\"";
+			}
+			writerCSV.write(csvString + "\n");
 		}
 
 		writer.close();
@@ -244,5 +284,4 @@ public class AnalyseData {
 				+ df.format(average) + "km/h");
 
 	}
-
 }
