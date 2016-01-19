@@ -31,7 +31,7 @@ public class App {
 				.getColorMapWithVersionNumber(routesList);
 
 		// parse Stop_Times
-		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified2.csv";
+		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified.csv";
 		List<String> stopTimesFileLines = Utilities.readFile(
 				stops_times_CSV_file, true);
 
