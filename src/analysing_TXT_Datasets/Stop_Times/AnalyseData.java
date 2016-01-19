@@ -154,13 +154,15 @@ public class AnalyseData {
 			HashMap<String, ArrayList<Stop_Times>> map,
 			List<String> tripIdForEachType, String type) throws IOException {
 
-		// list of velocities for all trip id
-		List<ArrayList<Double>> velocitiesList = new ArrayList<ArrayList<Double>>();
-		List<ArrayList<String>> routeAndBusNumberList = new ArrayList<ArrayList<String>>();
+		List<ArrayList<String>> informationList = new ArrayList<ArrayList<String>>();
 
+		int maxSequence = 0;
+
+		// Analyze
 		for (String s : tripIdForEachType) {
 
 			ArrayList<Stop_Times> stop_times_group = map.get(s);
+
 			// velocities for a trip id
 			ArrayList<Double> velocities = new ArrayList<Double>();
 
@@ -178,52 +180,207 @@ public class AnalyseData {
 						.get(i - 1).getShape_dist_traveled()) / 1000;
 				double v = d / time;
 				velocities.add(v);
+
 			}
 
-			velocitiesList.add(velocities);
-
-			ArrayList<String> routeAndBusNumber = new ArrayList<String>();
-
-			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
-			String[] splitStr1 = splitStr[0].split("\\.");
-
-			routeAndBusNumber.add(splitStr1[0]);
-			routeAndBusNumber.add(splitStr1[2]);
-
-			if (splitStr.length == 4) {
-				routeAndBusNumber.add(splitStr[1]);
-			} else {
-				routeAndBusNumber.add(splitStr[1] + "-" + splitStr[2]);
-			}
-
-			routeAndBusNumber.add(stop_times_group.get(0).getTrip_id());
-
-			for (double speed : velocities) {
-				routeAndBusNumber.add(String.valueOf(speed));
-			}
-
-			routeAndBusNumberList.add(routeAndBusNumber);
-		}
-
-		int maxSequence = 0;
-
-		List<Double> averageVelocityList = new ArrayList<Double>();
-
-		for (ArrayList<Double> velocitiesSequence : velocitiesList) {
-
-			if (velocitiesSequence.size() > maxSequence) {
-				maxSequence = velocitiesSequence.size();
+			if (velocities.size() > maxSequence) {
+				maxSequence = velocities.size();
 			}
 
 			double sumVelocity = 0;
 
-			for (double velocity : velocitiesSequence) {
+			for (double velocity : velocities) {
 				sumVelocity += velocity;
 			}
 
-			averageVelocityList.add(sumVelocity / velocitiesSequence.size());
+			ArrayList<String> information = new ArrayList<String>();
+
+			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
+			String[] splitStr1 = splitStr[0].split("\\.");
+
+			information.add(splitStr1[0]);
+			information.add(splitStr1[2]);
+
+			if (splitStr.length == 4) {
+				information.add(splitStr[1]);
+			} else {
+				information.add(splitStr[1] + "-" + splitStr[2]);
+			}
+
+			information.add(stop_times_group.get(0).getTrip_id());
+			information.add(String.valueOf(sumVelocity / velocities.size()));
+
+			for (double speed : velocities) {
+				information.add(String.valueOf(speed));
+			}
+
+			informationList.add(information);
 		}
 
+		/*
+		// Sort operator number
+		HashMap<String, ArrayList<ArrayList<String>>> onToRN = new HashMap<String, ArrayList<ArrayList<String>>>();
+
+		for (ArrayList<String> information : informationList) {
+
+			if (onToRN.get(information.get(1)) == null) {
+				ArrayList<ArrayList<String>> lists = new ArrayList<ArrayList<String>>();
+				ArrayList<String> list = new ArrayList<String>();
+				list.add(information.get(0));
+				for (int i = 2; i < information.size(); i++) {
+					list.add(information.get(i));
+				}
+				lists.add(list);
+				onToRN.put(information.get(1), lists);
+			} else {
+				ArrayList<String> list = new ArrayList<String>();
+				list.add(information.get(0));
+				for (int i = 2; i < information.size(); i++) {
+					list.add(information.get(i));
+				}
+				onToRN.get(information.get(1)).add(list);
+			}
+
+		}
+
+		List<Integer> operatorNumberList = new ArrayList<Integer>();
+
+		Set<Map.Entry<String, ArrayList<ArrayList<String>>>> entrySetONToRN = onToRN
+				.entrySet();
+		for (Map.Entry<String, ArrayList<ArrayList<String>>> entry : entrySetONToRN) {
+			operatorNumberList.add(Integer.parseInt(entry.getKey()));
+		}
+
+		int[] operatorNumberArray = new int[operatorNumberList.size()];
+		for (int i = 0; i < operatorNumberArray.length; i++) {
+			operatorNumberArray[i] = operatorNumberList.get(i);
+		}
+
+		Utilities.quickSort(operatorNumberArray);
+
+		// sort route number
+		for (int i = 0; i < operatorNumberArray.length; i++) {
+			System.out.println(operatorNumberArray[i]);
+
+			String operatorNumber = String.valueOf(operatorNumberArray[i]);
+
+			ArrayList<ArrayList<String>> informationPart2List = onToRN
+					.get(operatorNumber);
+
+			HashMap<String, ArrayList<ArrayList<String>>> rnToRun = new HashMap<String, ArrayList<ArrayList<String>>>();
+
+			for (ArrayList<String> informationPart2 : informationPart2List) {
+
+				if (rnToRun.get(informationPart2.get(1)) == null) {
+					ArrayList<ArrayList<String>> lists = new ArrayList<ArrayList<String>>();
+					ArrayList<String> list = new ArrayList<String>();
+					list.add(informationPart2.get(0));
+					for (int j = 2; j < informationPart2.size(); j++) {
+						list.add(informationPart2.get(j));
+					}
+					lists.add(list);
+					rnToRun.put(informationPart2.get(1), lists);
+				} else {
+					ArrayList<String> list = new ArrayList<String>();
+					list.add(informationPart2.get(0));
+					for (int j = 2; j < informationPart2.size(); j++) {
+						list.add(informationPart2.get(j));
+					}
+					rnToRun.get(informationPart2.get(1)).add(list);
+				}
+
+			}
+
+			List<Integer> routeNumberList = new ArrayList<Integer>();
+			HashMap<String, ArrayList<String>> routeNumberMap = new HashMap<String, ArrayList<String>>();
+
+			Set<Map.Entry<String, ArrayList<ArrayList<String>>>> entrySetRNToRun = rnToRun
+					.entrySet();
+			for (Map.Entry<String, ArrayList<ArrayList<String>>> entry : entrySetRNToRun) {
+
+				String[] splitStr = entry.getKey().split("-");
+
+				if (splitStr.length == 1) {
+					routeNumberList.add(Integer.parseInt(entry.getKey()));
+					if (routeNumberMap.get(splitStr[0]) == null) {
+						ArrayList<String> list = new ArrayList<String>();
+						list.add(" ");
+						routeNumberMap.put(splitStr[0], list);
+					} else {
+						routeNumberMap.get(splitStr[0]).add(" ");
+					}
+				} else {
+					int routeNumber = Integer.parseInt(splitStr[0]);
+					routeNumberList.add(routeNumber);
+					if (routeNumberMap.get(splitStr[0]) == null) {
+						ArrayList<String> list = new ArrayList<String>();
+						list.add(splitStr[1]);
+						routeNumberMap.put(splitStr[0], list);
+					} else {
+						routeNumberMap.get(splitStr[0]).add(splitStr[1]);
+					}
+				}
+
+			}
+
+			int[] routeNumberArray = new int[routeNumberList.size()];
+			for (int j = 0; j < routeNumberArray.length; j++) {
+				routeNumberArray[j] = routeNumberList.get(j);
+			}
+
+			Utilities.quickSort(routeNumberArray);
+
+			// 
+			List<String> sortedRouteNumber = new ArrayList<String>();
+			for(int j = 0; j < routeNumberArray.length; j++){
+				
+			}
+
+			for (int j = 0; j < routeNumberArray.length; j++) {
+				System.out.println(routeNumberArray[j]);
+
+				String routeNumber = String.valueOf(routeNumberArray[j]);
+
+				ArrayList<ArrayList<String>> informationPart3List = rnToRun
+						.get(routeNumber);
+
+				HashMap<String, ArrayList<String>> runToString = new HashMap<String, ArrayList<String>>();
+
+				for (ArrayList<String> informationPart3 : informationPart3List) {
+					if (runToString.get(informationPart3.get(0)) == null) {
+						ArrayList<String> list = new ArrayList<String>();
+						for (int k = 1; k < informationPart3.size(); k++) {
+							list.add(informationPart3.get(k));
+						}
+						runToString.put(informationPart3.get(0), list);
+					}
+
+				}
+
+				List<Integer> runList = new ArrayList<Integer>();
+
+				Set<Map.Entry<String, ArrayList<String>>> entrySetrunToString = runToString
+						.entrySet();
+				for (Map.Entry<String, ArrayList<String>> entry : entrySetrunToString) {
+					runList.add(Integer.parseInt(entry.getKey()));
+				}
+
+				int[] runArray = new int[runList.size()];
+				for (int k = 0; k < runArray.length; k++) {
+					runArray[k] = runList.get(k);
+				}
+
+				Utilities.quickSort(runArray);
+
+				for (int k = 0; k < runArray.length; k++) {
+					System.out.println(runArray[k]);
+				}
+
+			}
+
+		}*/
+
+		// take down results
 		DecimalFormat df = new DecimalFormat("#.##");
 
 		List<String> results = new ArrayList<String>();
@@ -246,31 +403,30 @@ public class AnalyseData {
 
 		double sum = 0;
 
-		for (int i = 0; i < averageVelocityList.size(); i++) {
+		for (int i = 0; i < informationList.size(); i++) {
 
-			double v = averageVelocityList.get(i);
+			String run = informationList.get(i).get(0);
+			String route = informationList.get(i).get(1);
+			String busNumber = informationList.get(i).get(2);
+			// String tripId = informationList.get(i).get(3);
+
+			double v = Double.parseDouble(informationList.get(i).get(4));
 			sum += v;
 
-			String run = routeAndBusNumberList.get(i).get(0);
-			String route = routeAndBusNumberList.get(i).get(1);
-			String busNumber = routeAndBusNumberList.get(i).get(2);
-			String tripId = routeAndBusNumberList.get(i).get(3);
-
-			// for 4 to size - 1
-			String result = ("Operator Number: " + route + " Route Number: "
-					+ busNumber + " Run: " + run + " Average Velocity: "
+			String result = ("Operator Number: " + route + ", Route Number: "
+					+ busNumber + ", Run: " + run + ", Average Velocity: "
 					+ df.format(v) + "km/h");
-			for (int j = 4; j <= routeAndBusNumberList.get(i).size() - 1; j++) {
-				result += " s" + (j - 3) + ": "
-						+ routeAndBusNumberList.get(i).get(j);
+			for (int j = 5; j <= informationList.get(i).size() - 1; j++) {
+				result += ", s" + (j - 4) + ": "
+						+ informationList.get(i).get(j);
 			}
 			results.add(result);
 			writer.write(result + "\n");
 
 			String csvString = "\"" + route + "\",\"" + busNumber + "\",\""
 					+ run + "\",\"" + df.format(v) + "\"";
-			for (int j = 4; j <= routeAndBusNumberList.get(i).size() - 1; j++) {
-				csvString += ",\"" + routeAndBusNumberList.get(i).get(j) + "\"";
+			for (int j = 5; j <= informationList.get(i).size() - 1; j++) {
+				csvString += ",\"" + informationList.get(i).get(j) + "\"";
 			}
 			writerCSV.write(csvString + "\n");
 		}
@@ -278,7 +434,7 @@ public class AnalyseData {
 		writer.close();
 		writerCSV.close();
 
-		double average = sum / averageVelocityList.size();
+		double average = sum / informationList.size();
 
 		System.out.println("Type: " + type + " Average Velocity: "
 				+ df.format(average) + "km/h");
