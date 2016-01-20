@@ -281,9 +281,9 @@ public class AnalyseData {
 
 	}
 
-	public HashMap<String, List<Double>> classifyRouteNumber(String folderName,
+	public HashMap<String, List<Double>> classifyRouteNumber(
 			HashMap<String, ArrayList<Stop_Times>> map,
-			List<String> tripIdForEachType, String type) {
+			List<String> tripIdForEachType) {
 
 		// route number -> speed list
 		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = new HashMap<String, List<Double>>();
@@ -347,63 +347,84 @@ public class AnalyseData {
 
 		}
 
-		// route number -> speed list
-		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
-				.entrySet();
-		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
-			System.out.println(entry.getKey());
-			for (double d : entry.getValue()) {
-				System.out.println(d);
-			}
-		}
-
 		return routeNumberToListOfSpeedMap;
 	}
 
-	public void calculatePDFCurve(
+	public void calculatePDFCurve(String folderName, String type,
 			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
-			double distance) {
+			double distance) throws IOException {
+
+		Utilities.makeDir(folderName + "Analysis_Results/Stop_Times_PDF");
+		FileWriter writer = new FileWriter(
+				folderName
+						+ "Analysis_Results/Stop_Times_PDF/Stop_Times_Analysis_Results_"
+						+ type + ".txt");
+
+		DecimalFormat df = new DecimalFormat("#.##");
 
 		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
 				.entrySet();
 		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+
 			String routeNumber = entry.getKey();
 			List<Double> speedList = entry.getValue();
 
+			HashMap<Integer, Integer> indexToNumMap = new HashMap<Integer, Integer>();
+
 			double sMax = Double.MIN_VALUE;
 			double sMin = Double.MAX_VALUE;
-			double sStart;
-			double sEnd;
+
+			// sMin, sMax
+			for (double d : speedList) {
+				if (d < sMin)
+					sMin = d;
+				if (d > sMax)
+					sMax = d;
+			}
+
+			int indexMax = 0;
 
 			for (double d : speedList) {
-				if (d < sMin) {
-					sMin = d;
+				int index = (int) ((d - sMin) / distance);
+				if (index > indexMax) {
+					indexMax = index;
 				}
-
-				if (d > sMax) {
-					sMax = d;
+				if (indexToNumMap.get(index) == null) {
+					indexToNumMap.put(index, 1);
+				} else {
+					indexToNumMap.put(index, indexToNumMap.get(index) + 1);
 				}
 			}
 
-			if (Math.round(sMin) == Math.floor(sMin)) {
-				sStart = Math.round(sMin);
-			} else {
-				sStart = Math.round(sMin) - 0.5;
+			writer.write("\"Speed:\"");
+
+			List<Double> probabilityList = new ArrayList<Double>();
+
+			for (int i = 0; i <= indexMax; i++) {
+				double middle = sMin + i * distance + 0.5 * distance;
+				double probability;
+				if (indexToNumMap.get(i) == null) {
+					probability = 0.0;
+				} else {
+					probability = (double) indexToNumMap.get(i)
+							/ (double) speedList.size();
+				}
+				probabilityList.add(probability);
+				writer.write(",\"" + df.format(middle) + "\"");
 			}
 
-			if (Math.round(sMax) == Math.ceil(sMax)) {
-				sEnd = Math.round(sMax);
-			} else {
-				sEnd = Math.round(sMax) + 0.5;
+			writer.write("\n");
+
+			writer.write("\"" + routeNumber + "\"");
+
+			for (double d : probabilityList) {
+				writer.write(",\"" + d + "\"");
 			}
 
-			System.out.println("sStart: " + sStart);
-			System.out.println("sEnd: " + sEnd);
-
-			int numSlice = (int) ((sEnd - sStart) / 0.5);
-			
-			HashMap<Double, Double> map = new HashMap<Double, Double>();
+			writer.write("\n");
 
 		}
+
+		writer.close();
 	}
 }

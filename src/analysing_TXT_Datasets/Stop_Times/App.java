@@ -31,7 +31,7 @@ public class App {
 				.getColorMapWithVersionNumber(routesList);
 
 		// parse Stop_Times
-		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified2.csv";
+		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified.csv";
 		List<String> stopTimesFileLines = Utilities.readFile(
 				stops_times_CSV_file, true);
 
@@ -70,6 +70,40 @@ public class App {
 		List<String> listOfSydneyLightRailNetwork = new ArrayList<String>();
 		List<String> listOfIntercityTrainsNetwork = new ArrayList<String>();
 		List<String> listOfNewcastleFerries = new ArrayList<String>();
+
+		List<List<String>> allTransportationNetworks = new ArrayList<List<String>>();
+		allTransportationNetworks.add(listOfSydneyBusesNetwork);
+		allTransportationNetworks.add(listOfRegionalCoachesNetwork);
+		allTransportationNetworks.add(listOfRegionalTrainsNetwork);
+		allTransportationNetworks.add(listOfPrivatebusservices);
+		allTransportationNetworks.add(listOfIllawarraBusesNetwork);
+		allTransportationNetworks.add(listOfBlueMountainsBusesNetwork);
+		allTransportationNetworks.add(listOfCentralCoastBusesNetwork);
+		allTransportationNetworks.add(listOfTemporarybuses);
+		allTransportationNetworks.add(listOfHunterBusesNetwork);
+		allTransportationNetworks.add(listOfSydneyTrainsNetwork);
+		allTransportationNetworks.add(listOfSydneyFerriesNetwork);
+		allTransportationNetworks.add(listOfPrivateferryandfastferryservices);
+		allTransportationNetworks.add(listOfSydneyLightRailNetwork);
+		allTransportationNetworks.add(listOfIntercityTrainsNetwork);
+		allTransportationNetworks.add(listOfNewcastleFerries);
+
+		List<String> typeList = new ArrayList<String>();
+		typeList.add("SydneyBusesNetwork");
+		typeList.add("RegionalTrainsNetwork");
+		typeList.add("RegionalCoachesNetwork");
+		typeList.add("PrivateBusServices");
+		typeList.add("IllawarraBusesNetwork");
+		typeList.add("BlueMountainsBusesNetwork");
+		typeList.add("CentralCoastBusesNetwork");
+		typeList.add("Temporarybuses");
+		typeList.add("HunterBusesNetwork");
+		typeList.add("SydneyTrainsNetwork");
+		typeList.add("SydneyFerriesNetwork");
+		typeList.add("PrivateFerryAndFastFerryServices");
+		typeList.add("SydneyLightRailNetwork");
+		typeList.add("IntercityTrainsNetwork");
+		typeList.add("NewCastleFerries");
 
 		Set<Map.Entry<String, String>> entrySetTypeMap = tripIdToTypeMap
 				.entrySet();
@@ -128,59 +162,22 @@ public class App {
 
 		// Analyzing SydneyBusesNetwork
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
-		
-		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(folderName,
-				tripIdToListOfStopTimesMap, listOfRegionalTrainsNetwork,
-				"RegionalTrainsNetwork");
-		
-		analyseData.calculatePDFCurve(routeNumberToListOfSpeedMap, 0.5);
 
-		/*analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfSydneyBusesNetwork,
-				"SydneyBusesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfRegionalTrainsNetwork,
-				"RegionalTrainsNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfRegionalCoachesNetwork,
-				"RegionalCoachesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfPrivatebusservices,
-				"PrivateBusServices");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfIllawarraBusesNetwork,
-				"IllawarraBusesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfBlueMountainsBusesNetwork,
-				"BlueMountainsBusesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfCentralCoastBusesNetwork,
-				"CentralCoastBusesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfTemporarybuses,
-				"Temporarybuses");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfHunterBusesNetwork,
-				"HunterBusesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfSydneyTrainsNetwork,
-				"SydneyTrainsNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfSydneyFerriesNetwork,
-				"SydneyFerriesNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap,
-				listOfPrivateferryandfastferryservices,
-				"PrivateFerryAndFastFerryServices");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfSydneyLightRailNetwork,
-				"SydneyLightRailNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfIntercityTrainsNetwork,
-				"IntercityTrainsNetwork");
-		analyseData.analysingATypeOfNetwork(folderName,
-				tripIdToListOfStopTimesMap, listOfNewcastleFerries,
-				"NewCastleFerries");*/
+		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = new HashMap<String, List<Double>>();
+
+		for (int i = 0; i < typeList.size(); i++) {
+			routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(
+					tripIdToListOfStopTimesMap,
+					allTransportationNetworks.get(i));
+			analyseData.calculatePDFCurve(folderName, typeList.get(i),
+					routeNumberToListOfSpeedMap, 0.5);
+		}
+
+		/*for (int i = 0; i < typeList.size(); i++) {
+			analyseData.analysingATypeOfNetwork(folderName,
+					tripIdToListOfStopTimesMap,
+					allTransportationNetworks.get(i), typeList.get(i));
+		}*/
 
 	}
 }
