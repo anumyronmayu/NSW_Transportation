@@ -128,8 +128,14 @@ public class App {
 
 		// Analyzing SydneyBusesNetwork
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
+		
+		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(folderName,
+				tripIdToListOfStopTimesMap, listOfRegionalTrainsNetwork,
+				"RegionalTrainsNetwork");
+		
+		analyseData.calculatePDFCurve(routeNumberToListOfSpeedMap, 0.5);
 
-		analyseData.analysingATypeOfNetwork(folderName,
+		/*analyseData.analysingATypeOfNetwork(folderName,
 				tripIdToListOfStopTimesMap, listOfSydneyBusesNetwork,
 				"SydneyBusesNetwork");
 		analyseData.analysingATypeOfNetwork(folderName,
@@ -174,7 +180,7 @@ public class App {
 				"IntercityTrainsNetwork");
 		analyseData.analysingATypeOfNetwork(folderName,
 				tripIdToListOfStopTimesMap, listOfNewcastleFerries,
-				"NewCastleFerries");
+				"NewCastleFerries");*/
 
 	}
 }

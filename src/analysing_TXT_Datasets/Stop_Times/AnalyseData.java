@@ -281,7 +281,7 @@ public class AnalyseData {
 
 	}
 
-	public void classifyRouteNumber(String folderName,
+	public HashMap<String, List<Double>> classifyRouteNumber(String folderName,
 			HashMap<String, ArrayList<Stop_Times>> map,
 			List<String> tripIdForEachType, String type) {
 
@@ -347,6 +347,7 @@ public class AnalyseData {
 
 		}
 
+		// route number -> speed list
 		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
 				.entrySet();
 		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
@@ -354,6 +355,55 @@ public class AnalyseData {
 			for (double d : entry.getValue()) {
 				System.out.println(d);
 			}
+		}
+
+		return routeNumberToListOfSpeedMap;
+	}
+
+	public void calculatePDFCurve(
+			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
+			double distance) {
+
+		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
+				.entrySet();
+		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+			String routeNumber = entry.getKey();
+			List<Double> speedList = entry.getValue();
+
+			double sMax = Double.MIN_VALUE;
+			double sMin = Double.MAX_VALUE;
+			double sStart;
+			double sEnd;
+
+			for (double d : speedList) {
+				if (d < sMin) {
+					sMin = d;
+				}
+
+				if (d > sMax) {
+					sMax = d;
+				}
+			}
+
+			if (Math.round(sMin) == Math.floor(sMin)) {
+				sStart = Math.round(sMin);
+			} else {
+				sStart = Math.round(sMin) - 0.5;
+			}
+
+			if (Math.round(sMax) == Math.ceil(sMax)) {
+				sEnd = Math.round(sMax);
+			} else {
+				sEnd = Math.round(sMax) + 0.5;
+			}
+
+			System.out.println("sStart: " + sStart);
+			System.out.println("sEnd: " + sEnd);
+
+			int numSlice = (int) ((sEnd - sStart) / 0.5);
+			
+			HashMap<Double, Double> map = new HashMap<Double, Double>();
+
 		}
 	}
 }
