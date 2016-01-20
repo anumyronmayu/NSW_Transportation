@@ -198,16 +198,19 @@ public class AnalyseData {
 			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
 			String[] splitStr1 = splitStr[0].split("\\.");
 
-			information.add(splitStr1[0]);
-			information.add(splitStr1[2]);
+			information.add(splitStr1[0]); // run
+			information.add(splitStr1[2]); // operator number
 
+			// route number
 			if (splitStr.length == 4) {
 				information.add(splitStr[1]);
 			} else {
 				information.add(splitStr[1] + "-" + splitStr[2]);
 			}
 
-			information.add(stop_times_group.get(0).getTrip_id());
+			information.add(stop_times_group.get(0).getTrip_id()); // trip id
+
+			// average speed
 			information.add(String.valueOf(sumVelocity / velocities.size()));
 
 			for (double speed : velocities) {
@@ -243,16 +246,16 @@ public class AnalyseData {
 		for (int i = 0; i < informationList.size(); i++) {
 
 			String run = informationList.get(i).get(0);
-			String route = informationList.get(i).get(1);
-			String busNumber = informationList.get(i).get(2);
+			String operatorNumber = informationList.get(i).get(1);
+			String routeNumber = informationList.get(i).get(2);
 			// String tripId = informationList.get(i).get(3);
 
 			double v = Double.parseDouble(informationList.get(i).get(4));
 			sum += v;
 
-			String result = ("Operator Number: " + route + ", Route Number: "
-					+ busNumber + ", Run: " + run + ", Average Velocity: "
-					+ df.format(v) + "km/h");
+			String result = ("Operator Number: " + operatorNumber
+					+ ", Route Number: " + routeNumber + ", Run: " + run
+					+ ", Average Velocity: " + df.format(v) + "km/h");
 			for (int j = 5; j <= informationList.get(i).size() - 1; j++) {
 				result += ", s" + (j - 4) + ": "
 						+ informationList.get(i).get(j);
@@ -260,8 +263,8 @@ public class AnalyseData {
 			results.add(result);
 			writer.write(result + "\n");
 
-			String csvString = "\"" + route + "\",\"" + busNumber + "\",\""
-					+ run + "\",\"" + df.format(v) + "\"";
+			String csvString = "\"" + operatorNumber + "\",\"" + routeNumber
+					+ "\",\"" + run + "\",\"" + df.format(v) + "\"";
 			for (int j = 5; j <= informationList.get(i).size() - 1; j++) {
 				csvString += ",\"" + informationList.get(i).get(j) + "\"";
 			}
@@ -276,5 +279,81 @@ public class AnalyseData {
 		System.out.println("Type: " + type + " Average Velocity: "
 				+ df.format(average) + "km/h");
 
+	}
+
+	public void classifyRouteNumber(String folderName,
+			HashMap<String, ArrayList<Stop_Times>> map,
+			List<String> tripIdForEachType, String type) {
+
+		// route number -> speed list
+		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = new HashMap<String, List<Double>>();
+
+		int maxSequence = 0;
+
+		// Analyze
+		for (String s : tripIdForEachType) {
+
+			ArrayList<Stop_Times> stop_times_group = map.get(s);
+
+			// velocities for a trip id
+			ArrayList<Double> velocities = new ArrayList<Double>();
+
+			for (int i = 1; i < stop_times_group.size(); i++) {
+
+				double time = ((double) (stop_times_group.get(i)
+						.getArrival_time().getTime() - stop_times_group
+						.get(i - 1).getDeparture_time().getTime())) / 1000 / 60 / 60;// hour
+
+				if (time == 0) {
+					continue;
+				}
+
+				double d = (stop_times_group.get(i).getShape_dist_traveled() - stop_times_group
+						.get(i - 1).getShape_dist_traveled()) / 1000;
+				double v = d / time;
+				velocities.add(v);
+
+			}
+
+			if (velocities.size() > maxSequence) {
+				maxSequence = velocities.size();
+			}
+
+			double sumVelocity = 0;
+
+			for (double velocity : velocities) {
+				sumVelocity += velocity;
+			}
+
+			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
+
+			String routeNumber = "";
+			double averageSpeed = sumVelocity / velocities.size();
+
+			// route number
+			if (splitStr.length == 4) {
+				routeNumber = splitStr[1];
+			} else {
+				routeNumber = splitStr[1] + "-" + splitStr[2];
+			}
+
+			if (routeNumberToListOfSpeedMap.get(routeNumber) == null) {
+				List<Double> listOfSpeed = new ArrayList<Double>();
+				listOfSpeed.add(averageSpeed);
+				routeNumberToListOfSpeedMap.put(routeNumber, listOfSpeed);
+			} else {
+				routeNumberToListOfSpeedMap.get(routeNumber).add(averageSpeed);
+			}
+
+		}
+
+		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
+				.entrySet();
+		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+			System.out.println(entry.getKey());
+			for (double d : entry.getValue()) {
+				System.out.println(d);
+			}
+		}
 	}
 }
