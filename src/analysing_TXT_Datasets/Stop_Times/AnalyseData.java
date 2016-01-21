@@ -16,140 +16,6 @@ import utilities.Utilities;
 
 public class AnalyseData {
 
-	public List<Stop_Times> parseStrLines(List<String> list)
-			throws ParseException {
-
-		List<Stop_Times> stopTimesList = new ArrayList<Stop_Times>();
-
-		for (String s : list) {
-
-			String[] splitStr = s.split("\",\"");
-
-			Stop_Times st = new Stop_Times();
-
-			st.setTrip_id(splitStr[0].substring(1, splitStr[0].length()));
-
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-			Date date1 = simpleDateFormat.parse(splitStr[1]);
-			st.setArrival_time(date1);
-			Date date2 = simpleDateFormat.parse(splitStr[2]);
-			st.setDeparture_time(date2);
-
-			st.setStop_id(splitStr[3]);
-
-			st.setStop_sequence(Integer.parseInt(splitStr[4]));
-
-			st.setStop_headsign(splitStr[5]);
-
-			st.setPickup_type(splitStr[6]);
-
-			st.setDrop_off_type(splitStr[7]);
-
-			st.setShape_dist_traveled(Double.parseDouble(splitStr[8].substring(
-					0, splitStr[8].length() - 1)));
-
-			stopTimesList.add(st);
-
-		}
-
-		return stopTimesList;
-
-	}
-
-	// Map trip id to list of stop times
-	public HashMap<String, ArrayList<Stop_Times>> mapTripIdToStopTimesList(
-			List<Stop_Times> stopTimesList) {
-
-		HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap = new HashMap<String, ArrayList<Stop_Times>>();
-
-		for (int i = 0; i < stopTimesList.size(); i++) {
-
-			Stop_Times st = stopTimesList.get(i);
-
-			if (tripIdToListOfStopTimesMap.get(st.getTrip_id()) == null) {
-				ArrayList<Stop_Times> stop_times_group = new ArrayList<Stop_Times>();
-				stop_times_group.add(st);
-				tripIdToListOfStopTimesMap.put(st.getTrip_id(),
-						stop_times_group);
-			} else {
-				tripIdToListOfStopTimesMap.get(st.getTrip_id()).add(st);
-			}
-
-		}
-
-		return tripIdToListOfStopTimesMap;
-
-	}
-
-	// trip_id => type
-	public HashMap<String, String> mapTripIdToType(
-			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
-			HashMap<String, String> typeMapWithVersionNumber) {
-
-		HashMap<String, String> tripIdToTypeMap = new HashMap<String, String>();
-		Set<Map.Entry<String, ArrayList<Stop_Times>>> entrySetTripID = tripIdToListOfStopTimesMap
-				.entrySet();
-		for (Map.Entry<String, ArrayList<Stop_Times>> entry : entrySetTripID) {
-
-			String[] splitStr = entry.getKey().split("-");
-			String route_id;
-
-			if (splitStr.length == 4) {
-				String[] splitStr1 = splitStr[0].split("\\.");
-				String[] splitStr2 = splitStr[3].split("\\.");
-				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
-						+ "-" + splitStr2[0];
-			} else {
-				String[] splitStr1 = splitStr[0].split("\\.");
-				String[] splitStr2 = splitStr[4].split("\\.");
-				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
-						+ "-" + splitStr[3] + "-" + splitStr2[0];
-			}
-
-			if (typeMapWithVersionNumber.get(route_id) != null) {
-				tripIdToTypeMap.put(entry.getKey(),
-						typeMapWithVersionNumber.get(route_id));
-			}
-
-		}
-
-		return tripIdToTypeMap;
-	}
-
-	// trip_id => color
-	public HashMap<String, String> mapTripIdToColor(
-			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
-			HashMap<String, String> colorMapWithVersionNumber) {
-
-		HashMap<String, String> tripIdToColorMap = new HashMap<String, String>();
-		Set<Map.Entry<String, ArrayList<Stop_Times>>> entrySetTripID = tripIdToListOfStopTimesMap
-				.entrySet();
-		for (Map.Entry<String, ArrayList<Stop_Times>> entry : entrySetTripID) {
-
-			String[] splitStr = entry.getKey().split("-");
-			String route_id;
-
-			if (splitStr.length == 4) {
-				String[] splitStr1 = splitStr[0].split("\\.");
-				String[] splitStr2 = splitStr[3].split("\\.");
-				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
-						+ "-" + splitStr2[0];
-			} else {
-				String[] splitStr1 = splitStr[0].split("\\.");
-				String[] splitStr2 = splitStr[4].split("\\.");
-				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
-						+ "-" + splitStr[3] + "-" + splitStr2[0];
-			}
-
-			if (colorMapWithVersionNumber.get(route_id) != null) {
-				tripIdToColorMap.put(entry.getKey(),
-						colorMapWithVersionNumber.get(route_id));
-			}
-		}
-
-		return tripIdToColorMap;
-	}
-
 	public void analysingATypeOfNetwork(String folderName,
 			HashMap<String, ArrayList<Stop_Times>> map,
 			List<String> tripIdForEachType, String type) throws IOException {
@@ -281,6 +147,120 @@ public class AnalyseData {
 
 	}
 
+	public void calculatePDFCurve(String folderName, String type,
+			String typeShort,
+			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
+			HashMap<String, String> routeNumberToOperatorNumberMap,
+			double distance) throws IOException {
+
+		Utilities.makeDir(folderName + "Analysis_Results/Stop_Times_PDF/"
+				+ type);
+
+		DecimalFormat df = new DecimalFormat("#.##");
+
+		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
+				.entrySet();
+		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+
+			String routeNumber = entry.getKey();
+			List<Double> speedList = entry.getValue();
+
+			HashMap<Integer, Integer> indexToNumMap = new HashMap<Integer, Integer>();
+
+			double sMax = Double.MIN_VALUE;
+			double sMin = Double.MAX_VALUE;
+
+			// sMin, sMax
+			for (double d : speedList) {
+				if (d < sMin)
+					sMin = d;
+				if (d > sMax)
+					sMax = d;
+			}
+
+			int indexMax = 0;
+
+			for (double d : speedList) {
+				int index = (int) ((d - sMin) / distance);
+				if (index > indexMax) {
+					indexMax = index;
+				}
+				if (indexToNumMap.get(index) == null) {
+					indexToNumMap.put(index, 1);
+				} else {
+					indexToNumMap.put(index, indexToNumMap.get(index) + 1);
+				}
+			}
+
+			String operatorNumber = routeNumberToOperatorNumberMap
+					.get(routeNumber);
+			String fileName = typeShort + "-" + operatorNumber + "-"
+					+ routeNumber;
+			FileWriter writer = new FileWriter(folderName
+					+ "Analysis_Results/Stop_Times_PDF/" + type + "/"
+					+ fileName + ".txt");
+
+			writer.write("\"Speed\",\"Probability\"\n");
+
+			for (int i = 0; i <= indexMax; i++) {
+				double middle = sMin + i * distance + 0.5 * distance;
+				double probability;
+				if (indexToNumMap.get(i) == null) {
+					probability = 0.0;
+				} else {
+					probability = (double) indexToNumMap.get(i)
+							/ (double) speedList.size();
+				}
+				writer.write("\"" + df.format(middle) + "\",");
+				writer.write("\"" + probability + "\"");
+				writer.write("\n");
+			}
+
+			writer.close();
+
+		}
+	}
+
+	public void calculateAverageSpeed(String folderName, String type,
+			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
+			HashMap<String, String> routeNumberToOperatorNumberMap)
+			throws IOException {
+
+		Utilities.makeDir(folderName
+				+ "Analysis_Results/Stop_Times_Average_Speed");
+
+		FileWriter writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times_Average_Speed/" + type + ".txt");
+		writer.write("\"Operator Number\",\"Route Number\",\"Average Speed\"\n");
+
+		DecimalFormat df = new DecimalFormat("#.##");
+
+		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
+				.entrySet();
+		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+
+			String routeNumber = entry.getKey();
+			List<Double> speedList = entry.getValue();
+
+			double sum = 0;
+			for (double d : speedList) {
+				sum += d;
+			}
+			double averageSpeed = sum / speedList.size();
+
+			String operatorNumber = routeNumberToOperatorNumberMap
+					.get(routeNumber);
+
+			writer.write("\"" + operatorNumber + "\",");
+			writer.write("\"" + routeNumber + "\",");
+			writer.write("\"" + df.format(averageSpeed) + "\"");
+			writer.write("\n");
+
+		}
+
+		writer.close();
+	}
+
 	public HashMap<String, List<Double>> classifyRouteNumber(
 			HashMap<String, ArrayList<Stop_Times>> map,
 			List<String> tripIdForEachType) {
@@ -350,81 +330,166 @@ public class AnalyseData {
 		return routeNumberToListOfSpeedMap;
 	}
 
-	public void calculatePDFCurve(String folderName, String type,
-			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
-			double distance) throws IOException {
+	public HashMap<String, String> getRouteNumberToOperatorNumberMap(
+			HashMap<String, ArrayList<Stop_Times>> map,
+			List<String> tripIdForEachType) {
 
-		Utilities.makeDir(folderName + "Analysis_Results/Stop_Times_PDF");
-		FileWriter writer = new FileWriter(
-				folderName
-						+ "Analysis_Results/Stop_Times_PDF/Stop_Times_Analysis_Results_"
-						+ type + ".txt");
+		HashMap<String, String> routeNumberToOperatorNumberMap = new HashMap<String, String>();
 
-		DecimalFormat df = new DecimalFormat("#.##");
+		for (String s : tripIdForEachType) {
 
-		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
-				.entrySet();
-		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+			ArrayList<Stop_Times> stop_times_group = map.get(s);
 
-			String routeNumber = entry.getKey();
-			List<Double> speedList = entry.getValue();
+			String[] splitStr = stop_times_group.get(0).getTrip_id().split("-");
+			String[] splitStr1 = splitStr[0].split("\\.");
 
-			HashMap<Integer, Integer> indexToNumMap = new HashMap<Integer, Integer>();
+			String operatorNumber = splitStr1[2];
 
-			double sMax = Double.MIN_VALUE;
-			double sMin = Double.MAX_VALUE;
-
-			// sMin, sMax
-			for (double d : speedList) {
-				if (d < sMin)
-					sMin = d;
-				if (d > sMax)
-					sMax = d;
+			String routeNumber;
+			if (splitStr.length == 4) {
+				routeNumber = splitStr[1];
+			} else {
+				routeNumber = splitStr[1] + "-" + splitStr[2];
 			}
 
-			int indexMax = 0;
-
-			for (double d : speedList) {
-				int index = (int) ((d - sMin) / distance);
-				if (index > indexMax) {
-					indexMax = index;
-				}
-				if (indexToNumMap.get(index) == null) {
-					indexToNumMap.put(index, 1);
-				} else {
-					indexToNumMap.put(index, indexToNumMap.get(index) + 1);
-				}
-			}
-
-			writer.write("\"Speed:\"");
-
-			List<Double> probabilityList = new ArrayList<Double>();
-
-			for (int i = 0; i <= indexMax; i++) {
-				double middle = sMin + i * distance + 0.5 * distance;
-				double probability;
-				if (indexToNumMap.get(i) == null) {
-					probability = 0.0;
-				} else {
-					probability = (double) indexToNumMap.get(i)
-							/ (double) speedList.size();
-				}
-				probabilityList.add(probability);
-				writer.write(",\"" + df.format(middle) + "\"");
-			}
-
-			writer.write("\n");
-
-			writer.write("\"" + routeNumber + "\"");
-
-			for (double d : probabilityList) {
-				writer.write(",\"" + d + "\"");
-			}
-
-			writer.write("\n");
+			routeNumberToOperatorNumberMap.put(routeNumber, operatorNumber);
 
 		}
 
-		writer.close();
+		return routeNumberToOperatorNumberMap;
+	}
+
+	// trip_id => color
+	public HashMap<String, String> mapTripIdToColor(
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
+			HashMap<String, String> colorMapWithVersionNumber) {
+
+		HashMap<String, String> tripIdToColorMap = new HashMap<String, String>();
+		Set<Map.Entry<String, ArrayList<Stop_Times>>> entrySetTripID = tripIdToListOfStopTimesMap
+				.entrySet();
+		for (Map.Entry<String, ArrayList<Stop_Times>> entry : entrySetTripID) {
+
+			String[] splitStr = entry.getKey().split("-");
+			String route_id;
+
+			if (splitStr.length == 4) {
+				String[] splitStr1 = splitStr[0].split("\\.");
+				String[] splitStr2 = splitStr[3].split("\\.");
+				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
+						+ "-" + splitStr2[0];
+			} else {
+				String[] splitStr1 = splitStr[0].split("\\.");
+				String[] splitStr2 = splitStr[4].split("\\.");
+				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
+						+ "-" + splitStr[3] + "-" + splitStr2[0];
+			}
+
+			if (colorMapWithVersionNumber.get(route_id) != null) {
+				tripIdToColorMap.put(entry.getKey(),
+						colorMapWithVersionNumber.get(route_id));
+			}
+		}
+
+		return tripIdToColorMap;
+	}
+
+	// Map trip id to list of stop times
+	public HashMap<String, ArrayList<Stop_Times>> mapTripIdToStopTimesList(
+			List<Stop_Times> stopTimesList) {
+
+		HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap = new HashMap<String, ArrayList<Stop_Times>>();
+
+		for (int i = 0; i < stopTimesList.size(); i++) {
+
+			Stop_Times st = stopTimesList.get(i);
+
+			if (tripIdToListOfStopTimesMap.get(st.getTrip_id()) == null) {
+				ArrayList<Stop_Times> stop_times_group = new ArrayList<Stop_Times>();
+				stop_times_group.add(st);
+				tripIdToListOfStopTimesMap.put(st.getTrip_id(),
+						stop_times_group);
+			} else {
+				tripIdToListOfStopTimesMap.get(st.getTrip_id()).add(st);
+			}
+
+		}
+
+		return tripIdToListOfStopTimesMap;
+
+	}
+
+	// trip_id => type
+	public HashMap<String, String> mapTripIdToType(
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
+			HashMap<String, String> typeMapWithVersionNumber) {
+
+		HashMap<String, String> tripIdToTypeMap = new HashMap<String, String>();
+		Set<Map.Entry<String, ArrayList<Stop_Times>>> entrySetTripID = tripIdToListOfStopTimesMap
+				.entrySet();
+		for (Map.Entry<String, ArrayList<Stop_Times>> entry : entrySetTripID) {
+
+			String[] splitStr = entry.getKey().split("-");
+			String route_id;
+
+			if (splitStr.length == 4) {
+				String[] splitStr1 = splitStr[0].split("\\.");
+				String[] splitStr2 = splitStr[3].split("\\.");
+				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
+						+ "-" + splitStr2[0];
+			} else {
+				String[] splitStr1 = splitStr[0].split("\\.");
+				String[] splitStr2 = splitStr[4].split("\\.");
+				route_id = splitStr1[2] + "-" + splitStr[1] + "-" + splitStr[2]
+						+ "-" + splitStr[3] + "-" + splitStr2[0];
+			}
+
+			if (typeMapWithVersionNumber.get(route_id) != null) {
+				tripIdToTypeMap.put(entry.getKey(),
+						typeMapWithVersionNumber.get(route_id));
+			}
+
+		}
+
+		return tripIdToTypeMap;
+	}
+
+	public List<Stop_Times> parseStrLines(List<String> list)
+			throws ParseException {
+
+		List<Stop_Times> stopTimesList = new ArrayList<Stop_Times>();
+
+		for (String s : list) {
+
+			String[] splitStr = s.split("\",\"");
+
+			Stop_Times st = new Stop_Times();
+
+			st.setTrip_id(splitStr[0].substring(1, splitStr[0].length()));
+
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+			Date date1 = simpleDateFormat.parse(splitStr[1]);
+			st.setArrival_time(date1);
+			Date date2 = simpleDateFormat.parse(splitStr[2]);
+			st.setDeparture_time(date2);
+
+			st.setStop_id(splitStr[3]);
+
+			st.setStop_sequence(Integer.parseInt(splitStr[4]));
+
+			st.setStop_headsign(splitStr[5]);
+
+			st.setPickup_type(splitStr[6]);
+
+			st.setDrop_off_type(splitStr[7]);
+
+			st.setShape_dist_traveled(Double.parseDouble(splitStr[8].substring(
+					0, splitStr[8].length() - 1)));
+
+			stopTimesList.add(st);
+
+		}
+
+		return stopTimesList;
+
 	}
 }

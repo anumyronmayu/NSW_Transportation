@@ -105,6 +105,23 @@ public class App {
 		typeList.add("IntercityTrainsNetwork");
 		typeList.add("NewCastleFerries");
 
+		List<String> typeListShort = new ArrayList<String>();
+		typeListShort.add("SBN");
+		typeListShort.add("RTN");
+		typeListShort.add("RCN");
+		typeListShort.add("PBS");
+		typeListShort.add("IBN");
+		typeListShort.add("BMBN");
+		typeListShort.add("CCBN");
+		typeListShort.add("TB");
+		typeListShort.add("HBN");
+		typeListShort.add("STN");
+		typeListShort.add("SFN");
+		typeListShort.add("PFFFS");
+		typeListShort.add("SLRN");
+		typeListShort.add("ITN");
+		typeListShort.add("NCF");
+
 		Set<Map.Entry<String, String>> entrySetTypeMap = tripIdToTypeMap
 				.entrySet();
 		for (Map.Entry<String, String> entry : entrySetTypeMap) {
@@ -164,20 +181,43 @@ public class App {
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
 
 		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = new HashMap<String, List<Double>>();
+		HashMap<String, String> routeNumberToOperatorNumberMap = new HashMap<String, String>();
 
 		for (int i = 0; i < typeList.size(); i++) {
 			routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(
 					tripIdToListOfStopTimesMap,
 					allTransportationNetworks.get(i));
-			analyseData.calculatePDFCurve(folderName, typeList.get(i),
-					routeNumberToListOfSpeedMap, 0.5);
+
+			routeNumberToOperatorNumberMap = analyseData
+					.getRouteNumberToOperatorNumberMap(
+							tripIdToListOfStopTimesMap,
+							allTransportationNetworks.get(i));
+
+			analyseData
+					.calculateAverageSpeed(folderName, typeList.get(i),
+							routeNumberToListOfSpeedMap,
+							routeNumberToOperatorNumberMap);
 		}
+
+		/*for (int i = 0; i < typeList.size(); i++) {
+			routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(
+					tripIdToListOfStopTimesMap,
+					allTransportationNetworks.get(i));
+
+			routeNumberToOperatorNumberMap = analyseData
+					.getRouteNumberToOperatorNumberMap(
+							tripIdToListOfStopTimesMap,
+							allTransportationNetworks.get(i));
+
+			analyseData.calculatePDFCurve(folderName, typeList.get(i),
+					typeListShort.get(i), routeNumberToListOfSpeedMap,
+					routeNumberToOperatorNumberMap, 0.5);
+		}*/
 
 		/*for (int i = 0; i < typeList.size(); i++) {
 			analyseData.analysingATypeOfNetwork(folderName,
 					tripIdToListOfStopTimesMap,
 					allTransportationNetworks.get(i), typeList.get(i));
 		}*/
-
 	}
 }
