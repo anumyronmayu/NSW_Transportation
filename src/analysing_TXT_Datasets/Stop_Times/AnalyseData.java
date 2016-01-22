@@ -147,6 +147,46 @@ public class AnalyseData {
 
 	}
 
+	public void calculateAverageSpeed(String folderName, String type,
+			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
+			HashMap<String, String> routeNumberToOperatorNumberMap)
+			throws IOException {
+
+		Utilities.makeDir(folderName
+				+ "Analysis_Results/Stop_Times_Average_Speed");
+
+		FileWriter writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times_Average_Speed/" + type + ".txt");
+		writer.write("\"Operator Number\",\"Route Number\",\"Average Speed\"\n");
+
+		DecimalFormat df = new DecimalFormat("#.##");
+
+		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
+				.entrySet();
+		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
+
+			String routeNumber = entry.getKey();
+			List<Double> speedList = entry.getValue();
+
+			double sum = 0;
+			for (double d : speedList) {
+				sum += d;
+			}
+			double averageSpeed = sum / speedList.size();
+
+			String operatorNumber = routeNumberToOperatorNumberMap
+					.get(routeNumber);
+
+			writer.write("\"" + operatorNumber + "\",");
+			writer.write("\"" + routeNumber + "\",");
+			writer.write("\"" + df.format(averageSpeed) + "\"");
+			writer.write("\n");
+
+		}
+
+		writer.close();
+	}
+
 	public void calculatePDFCurve(String folderName, String type,
 			String typeShort,
 			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
@@ -219,46 +259,6 @@ public class AnalyseData {
 			writer.close();
 
 		}
-	}
-
-	public void calculateAverageSpeed(String folderName, String type,
-			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
-			HashMap<String, String> routeNumberToOperatorNumberMap)
-			throws IOException {
-
-		Utilities.makeDir(folderName
-				+ "Analysis_Results/Stop_Times_Average_Speed");
-
-		FileWriter writer = new FileWriter(folderName
-				+ "Analysis_Results/Stop_Times_Average_Speed/" + type + ".txt");
-		writer.write("\"Operator Number\",\"Route Number\",\"Average Speed\"\n");
-
-		DecimalFormat df = new DecimalFormat("#.##");
-
-		Set<Map.Entry<String, List<Double>>> entrySetRouteNumberToListOfSpeedMap = routeNumberToListOfSpeedMap
-				.entrySet();
-		for (Map.Entry<String, List<Double>> entry : entrySetRouteNumberToListOfSpeedMap) {
-
-			String routeNumber = entry.getKey();
-			List<Double> speedList = entry.getValue();
-
-			double sum = 0;
-			for (double d : speedList) {
-				sum += d;
-			}
-			double averageSpeed = sum / speedList.size();
-
-			String operatorNumber = routeNumberToOperatorNumberMap
-					.get(routeNumber);
-
-			writer.write("\"" + operatorNumber + "\",");
-			writer.write("\"" + routeNumber + "\",");
-			writer.write("\"" + df.format(averageSpeed) + "\"");
-			writer.write("\n");
-
-		}
-
-		writer.close();
 	}
 
 	public HashMap<String, List<Double>> classifyRouteNumber(
