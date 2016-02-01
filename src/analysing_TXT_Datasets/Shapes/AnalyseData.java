@@ -1,7 +1,6 @@
 package analysing_TXT_Datasets.Shapes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class AnalyseData {
