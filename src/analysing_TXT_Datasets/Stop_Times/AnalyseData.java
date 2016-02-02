@@ -16,6 +16,18 @@ import utilities.Utilities;
 
 public class AnalyseData {
 
+	public List<Stop_Times> getStopTimesList() throws IOException, ParseException {
+		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified.csv";
+		List<String> stopTimesFileLines = Utilities.readFile(
+				stops_times_CSV_file, true);
+
+		AnalyseData analyseData = new AnalyseData();
+		List<Stop_Times> stopTimesList = analyseData
+				.parseStrLines(stopTimesFileLines);
+
+		return stopTimesList;
+	}
+
 	public void analysingATypeOfNetwork(String folderName,
 			HashMap<String, ArrayList<Stop_Times>> map,
 			List<String> tripIdForEachType, String type) throws IOException {
@@ -490,6 +502,22 @@ public class AnalyseData {
 		}
 
 		return stopTimesList;
+
+	}
+
+	public HashMap<String, String> mapStopIdToTripId(
+			List<Stop_Times> stopTimesList) {
+
+		HashMap<String, String> stopIdToTripIdMap = new HashMap<String, String>();
+
+		for (Stop_Times stopTimes : stopTimesList) {
+			if (stopIdToTripIdMap.get(stopTimes.getStop_id()) != null) {
+				stopIdToTripIdMap.put(stopTimes.getStop_id(),
+						stopTimes.getTrip_id());
+			}
+		}
+
+		return stopIdToTripIdMap;
 
 	}
 }

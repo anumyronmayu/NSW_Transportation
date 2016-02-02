@@ -7,7 +7,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import utilities.Utilities;
+
 public class AnalyseData {
+
+	public List<Routes> getRoutesList() throws IOException {
+
+		String routes_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/routes.csv";
+		List<String> fileLines = Utilities.readFile(routes_CSV_file, true);
+
+		AnalyseData obj = new AnalyseData();
+		List<Routes> routesList = obj.parseStrLines(fileLines);
+
+		return routesList;
+
+	}
 
 	public HashMap<String, String> getColorMapWithVersionNumber(
 			List<Routes> routesList) throws IOException {
