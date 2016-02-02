@@ -8,6 +8,75 @@ import utilities.Utilities;
 
 public class AnalyseData {
 
+	public int[][] calculateDensity(List<Stops> list) {
+
+		double latMin = Double.MAX_VALUE;
+		double latMax = Double.MIN_VALUE;
+		double lonMin = Double.MAX_VALUE;
+		double lonMax = Double.MIN_VALUE;
+
+		for (Stops s : list) {
+
+			double lat = s.getStop_lat() * -1;
+			double lon = s.getStop_lon();
+
+			if (lat < latMin) {
+				latMin = lat;
+			}
+			if (lat > latMax) {
+				latMax = lat;
+			}
+			if (lon < lonMin) {
+				lonMin = lon;
+			}
+			if (lon > lonMax) {
+				lonMax = lon;
+			} // get lat, lon
+
+		}
+
+		int N = 100;
+		int[][] quantity = new int[N][N];
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				quantity[i][j] = 0;
+			}
+		}
+
+		String id = " ";
+
+		for (Stops s : list) {
+			double lat = s.getStop_lat() * -1;
+			double lon = s.getStop_lon();
+
+			double latcopy = (latMax - latMin) / N;
+			double loncopy = (lonMax - lonMin) / N;
+
+			int i = (int) Math.floor((lat - latMin) / latcopy);
+			int j = (int) Math.floor((lon - lonMin) / loncopy);
+
+			String stopId = s.getStop_id();
+
+			if (id != stopId) {
+				if (i == N && j == N) {
+					quantity[i - 1][j - 1]++;
+				} else if (i == N) {
+					quantity[i - 1][j]++;
+				} else if (j == N) {
+					quantity[i][j - 1]++;
+				} else {
+					quantity[i][j]++;
+				}// quantity
+			}
+
+			id = stopId;
+
+		}
+
+		return quantity;
+
+	}
+
 	public List<Stops> getStopsList() throws IOException {
 
 		String stops_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/stops.csv";
