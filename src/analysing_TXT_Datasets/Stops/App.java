@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import utilities.Utilities;
 import analysing_TXT_Datasets.Routes.Routes;
 import analysing_TXT_Datasets.Stop_Times.Stop_Times;
 
@@ -49,7 +50,6 @@ public class App {
 		List<Stops> stopList = obj3.getStopsList();
 		System.out.println(stopList.size());
 
-		//
 		// type
 		List<Stops> listOfSydneyBusesNetwork = new ArrayList<Stops>();
 		List<Stops> listOfRegionalCoachesNetwork = new ArrayList<Stops>();
@@ -158,11 +158,12 @@ public class App {
 				default:
 					System.out.println("No Such Type!!!");
 				}
-
 			}
 		}
 
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
+		Utilities
+				.makeDir("/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/Stops");
 		FileWriter writer = new FileWriter(folderName
 				+ "Analysis_Results/Stops/Results.txt");
 
@@ -189,5 +190,4 @@ public class App {
 		writer.close();
 
 	}
-
 }

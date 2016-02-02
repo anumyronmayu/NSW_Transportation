@@ -511,7 +511,7 @@ public class AnalyseData {
 		HashMap<String, String> stopIdToTripIdMap = new HashMap<String, String>();
 
 		for (Stop_Times stopTimes : stopTimesList) {
-			if (stopIdToTripIdMap.get(stopTimes.getStop_id()) != null) {
+			if (stopIdToTripIdMap.get(stopTimes.getStop_id()) == null) {
 				stopIdToTripIdMap.put(stopTimes.getStop_id(),
 						stopTimes.getTrip_id());
 			}
