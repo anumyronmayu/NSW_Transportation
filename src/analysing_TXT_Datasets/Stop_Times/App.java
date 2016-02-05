@@ -166,10 +166,11 @@ public class App {
 		
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
 
-		// calculate PDF curve per type
+		// calculate PDF/CDF curve per type
 		for (int i = 0; i < typeList.size(); i++) {
 			List<Double> speedListForEachType = obj2.getSpeedListForEachType(tripIdToListOfStopTimesMap, allTransportationNetworks.get(i));
 			obj2.calculatePDFCurve(folderName, typeListShort.get(i), speedListForEachType, 0.5);
+			obj2.calculateCDFCurve(folderName, typeListShort.get(i), speedListForEachType, 0.5);
 		}
 		
 		/*

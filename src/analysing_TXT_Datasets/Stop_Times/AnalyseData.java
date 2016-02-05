@@ -249,6 +249,69 @@ public class AnalyseData {
 		writer.close();
 	}
 
+	public void calculateCDFCurve(String folderName, String typeShort,
+			List<Double> speedListForEachType, double distance)
+			throws IOException {
+
+		Utilities.makeDir(folderName
+				+ "Analysis_Results/Stop_Times/Stop_Times_CDF_PerType");
+
+		DecimalFormat df = new DecimalFormat("#.##");
+
+		HashMap<Integer, Integer> indexToNumMap = new HashMap<Integer, Integer>();
+
+		double sMax = Double.MIN_VALUE;
+		double sMin = Double.MAX_VALUE;
+
+		// sMin, sMax
+		for (double d : speedListForEachType) {
+			if (d < sMin)
+				sMin = d;
+			if (d > sMax)
+				sMax = d;
+		}
+
+		int indexMax = 0;
+
+		for (double d : speedListForEachType) {
+			int index = (int) ((d - sMin) / distance);
+			if (index > indexMax) {
+				indexMax = index;
+			}
+			if (indexToNumMap.get(index) == null) {
+				indexToNumMap.put(index, 1);
+			} else {
+				indexToNumMap.put(index, indexToNumMap.get(index) + 1);
+			}
+		}
+
+		FileWriter writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times/Stop_Times_CDF_PerType/"
+				+ typeShort + ".txt");
+
+		writer.write("\"Speed\",\"Probability\"\n");
+
+		double cumulativeProbability = 0;
+
+		for (int i = 0; i <= indexMax; i++) {
+			double middle = sMin + i * distance + 0.5 * distance;
+			double probability;
+			if (indexToNumMap.get(i) == null) {
+				probability = 0.0;
+			} else {
+				probability = (double) indexToNumMap.get(i)
+						/ (double) speedListForEachType.size();
+			}
+			cumulativeProbability += probability;
+			writer.write("\"" + df.format(middle) + "\",");
+			writer.write("\"" + cumulativeProbability + "\"");
+			writer.write("\n");
+		}
+
+		writer.close();
+
+	}
+
 	public void calculatePDFCurve(String folderName, String typeShort,
 			List<Double> speedListForEachType, double distance)
 			throws IOException {
