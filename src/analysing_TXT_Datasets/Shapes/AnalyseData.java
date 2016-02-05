@@ -79,7 +79,7 @@ public class AnalyseData {
 
 			String shapeId = s.getShape_id();
 
-			if (id != shapeId) {
+			if (!id.equals(shapeId)) {
 				if (i == N && j == N) {
 					quantity[i - 1][j - 1]++;
 				} else if (i == N) {

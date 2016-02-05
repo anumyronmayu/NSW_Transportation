@@ -156,6 +156,8 @@ public class App {
 
 		int index = 0;
 
+		int total = 0;
+
 		for (List<Shapes> transportationNetworks : allTransportationNetworks) {
 
 			String s = typeList.get(index);
@@ -169,11 +171,13 @@ public class App {
 				for (int j = 0; j < quantity.length; j++) {
 					writer.write(j + " " + (quantity.length - 1 - i) + " "
 							+ quantity[i][j] + "\n");
+					total += quantity[i][j];
 				}
 			}
 		}
 
 		writer.close();
 
+		System.out.println(total);
 	}
 }
