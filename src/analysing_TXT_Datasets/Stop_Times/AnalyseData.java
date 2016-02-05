@@ -147,7 +147,7 @@ public class AnalyseData {
 
 	}
 
-	public int[] arrivalDepartureTimeDistribution(String folderName,
+	public void arrivalDepartureTimeDistribution(String folderName,
 			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
 			List<String> tripIdListForEachType, String typeShort)
 			throws IOException {
@@ -224,7 +224,6 @@ public class AnalyseData {
 
 		writer.close();
 
-		return arrivalDepartureTimeDistributionArray;
 	}
 
 	public void calculateAverageSpeedPerOperatorRoute(String folderName,
