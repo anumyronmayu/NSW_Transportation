@@ -30,14 +30,14 @@ public class AnalyseData {
 
 	}
 
-	public int[][] calculateDensity(List<Shapes> list) {
+	public int[][] calculateDensity(List<Shapes> shapesList) {
 
 		double latMin = Double.MAX_VALUE;
 		double latMax = Double.MIN_VALUE;
 		double lonMin = Double.MAX_VALUE;
 		double lonMax = Double.MIN_VALUE;
 
-		for (Shapes s : list) {
+		for (Shapes s : shapesList) {
 
 			double lat = s.getShape_pt_lat() * -1;
 			double lon = s.getShape_pt_lon();
@@ -53,7 +53,7 @@ public class AnalyseData {
 			}
 			if (lon > lonMax) {
 				lonMax = lon;
-			} // get lat, lon
+			} // get lat, lon, max, min
 
 		}
 
@@ -67,7 +67,7 @@ public class AnalyseData {
 
 		String id = " ";
 
-		for (Shapes s : list) {
+		for (Shapes s : shapesList) {
 			double lat = s.getShape_pt_lat() * -1;
 			double lon = s.getShape_pt_lon();
 

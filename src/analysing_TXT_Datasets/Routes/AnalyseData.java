@@ -54,7 +54,7 @@ public class AnalyseData {
 
 		}
 
-		// get typeMapWithVersionNumber, colorMapWithVersionNumber
+		// get colorMapWithVersionNumber
 		Set<Map.Entry<String, ArrayList<Integer>>> entrySet = versionMap
 				.entrySet();
 		for (Map.Entry<String, ArrayList<Integer>> entry : entrySet) {
@@ -105,7 +105,7 @@ public class AnalyseData {
 
 		}
 
-		// get typeMapWithVersionNumber, colorMapWithVersionNumber
+		// get typeMapWithVersionNumber
 		Set<Map.Entry<String, ArrayList<Integer>>> entrySet = versionMap
 				.entrySet();
 		for (Map.Entry<String, ArrayList<Integer>> entry : entrySet) {
@@ -123,6 +123,34 @@ public class AnalyseData {
 		}
 
 		return typeMapWithVersionNumber;
+	}
+
+	public HashMap<String, String> getColorMap(List<Routes> routesList)
+			throws IOException {
+
+		HashMap<String, String> colorMap = new HashMap<String, String>();
+
+		for (Routes route : routesList) {
+			if (colorMap.get(route.getRoute_id()) == null) {
+				colorMap.put(route.getRoute_id(), route.getRoute_color());
+			}
+		}
+
+		return colorMap;
+	}
+
+	public HashMap<String, String> getTypeMap(List<Routes> routesList)
+			throws IOException {
+
+		HashMap<String, String> typeMap = new HashMap<String, String>();
+
+		for (Routes route : routesList) {
+			if (typeMap.get(route.getRoute_id()) == null) {
+				typeMap.put(route.getRoute_id(), route.getRoute_desc());
+			}
+		}
+
+		return typeMap;
 	}
 
 	public List<Routes> parseStrLines(List<String> list) {
