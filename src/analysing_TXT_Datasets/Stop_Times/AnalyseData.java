@@ -196,11 +196,30 @@ public class AnalyseData {
 						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution/"
 						+ typeShort + ".txt");
 
-		writer.write("\"Timeslot\",\"Quantity\"\n");
+		writer.write("Timeslot Quantity\n");
 
 		for (int i = 0; i < 144; i++) {
-			writer.write("\"" + i + "\"," + "\""
-					+ arrivalDepartureTimeDistributionArray[i] + "\"\n");
+
+			int hour = i / 6;
+			int min = (i % 6) * 10;
+
+			String hourS = "";
+			String minS = "";
+
+			if (hour < 10) {
+				hourS = "0" + hour;
+			} else {
+				hourS = String.valueOf(hour);
+			}
+
+			if (min == 0) {
+				minS = "00";
+			} else {
+				minS = String.valueOf(min);
+			}
+
+			writer.write(hourS + ":" + minS + " "
+					+ arrivalDepartureTimeDistributionArray[i] + "\n");
 		}
 
 		writer.close();
@@ -369,52 +388,6 @@ public class AnalyseData {
 		}
 
 		writer.close();
-
-	}
-
-	public List<Double> getSpeedListForEachType(
-			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
-			List<String> tripIdForEachType) {
-
-		List<Double> speedListForEachType = new ArrayList<Double>();
-
-		// trip id => average speed
-		for (String tripId : tripIdForEachType) {
-
-			ArrayList<Stop_Times> stop_times_group = tripIdToListOfStopTimesMap
-					.get(tripId);
-
-			// velocities for a trip id
-			ArrayList<Double> velocities = new ArrayList<Double>();
-
-			for (int i = 1; i < stop_times_group.size(); i++) {
-
-				double time = ((double) (stop_times_group.get(i)
-						.getArrival_time().getTime() - stop_times_group
-						.get(i - 1).getDeparture_time().getTime())) / 1000 / 60 / 60;// hour
-
-				if (time == 0) {
-					continue;
-				}
-
-				double d = (stop_times_group.get(i).getShape_dist_traveled() - stop_times_group
-						.get(i - 1).getShape_dist_traveled()) / 1000;
-				double v = d / time;
-				velocities.add(v);
-
-			}
-
-			double sumVelocity = 0;
-			for (double velocity : velocities) {
-				sumVelocity += velocity;
-			}
-			double averageSpeed = sumVelocity / velocities.size();
-
-			speedListForEachType.add(averageSpeed);
-
-		}
-
-		return speedListForEachType;
 
 	}
 
@@ -589,6 +562,52 @@ public class AnalyseData {
 		}
 
 		return routeNumberToOperatorNumberMap;
+	}
+
+	public List<Double> getSpeedListForEachType(
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
+			List<String> tripIdForEachType) {
+
+		List<Double> speedListForEachType = new ArrayList<Double>();
+
+		// trip id => average speed
+		for (String tripId : tripIdForEachType) {
+
+			ArrayList<Stop_Times> stop_times_group = tripIdToListOfStopTimesMap
+					.get(tripId);
+
+			// velocities for a trip id
+			ArrayList<Double> velocities = new ArrayList<Double>();
+
+			for (int i = 1; i < stop_times_group.size(); i++) {
+
+				double time = ((double) (stop_times_group.get(i)
+						.getArrival_time().getTime() - stop_times_group
+						.get(i - 1).getDeparture_time().getTime())) / 1000 / 60 / 60;// hour
+
+				if (time == 0) {
+					continue;
+				}
+
+				double d = (stop_times_group.get(i).getShape_dist_traveled() - stop_times_group
+						.get(i - 1).getShape_dist_traveled()) / 1000;
+				double v = d / time;
+				velocities.add(v);
+
+			}
+
+			double sumVelocity = 0;
+			for (double velocity : velocities) {
+				sumVelocity += velocity;
+			}
+			double averageSpeed = sumVelocity / velocities.size();
+
+			speedListForEachType.add(averageSpeed);
+
+		}
+
+		return speedListForEachType;
+
 	}
 
 	public List<Stop_Times> getStopTimesList() throws IOException,

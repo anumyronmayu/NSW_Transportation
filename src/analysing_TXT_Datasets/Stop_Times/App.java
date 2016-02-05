@@ -166,17 +166,17 @@ public class App {
 		
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
 
+		// divide 24 hours into 144 timeslots, each timeslot is 10 minutes, calculate frequency of transportation for each type
+		for (int i = 0; i < typeList.size(); i++) {
+			obj2.arrivalDepartureTimeDistribution(folderName, tripIdToListOfStopTimesMap, allTransportationNetworks.get(i), typeListShort.get(i));
+		}
+
+		/*
 		// calculate PDF/CDF curve per type
 		for (int i = 0; i < typeList.size(); i++) {
 			List<Double> speedListForEachType = obj2.getSpeedListForEachType(tripIdToListOfStopTimesMap, allTransportationNetworks.get(i));
 			obj2.calculatePDFCurve(folderName, typeListShort.get(i), speedListForEachType, 0.5);
 			obj2.calculateCDFCurve(folderName, typeListShort.get(i), speedListForEachType, 0.5);
-		}
-		
-		/*
-		// divide 24 hours into 144 timeslots, each timeslot is 10 minutes, calculate frequency of transportation for each type
-		for (int i = 0; i < typeList.size(); i++) {
-			obj2.arrivalDepartureTimeDistribution(folderName, tripIdToListOfStopTimesMap, allTransportationNetworks.get(i), typeListShort.get(i));
 		}
 		*/
 		

@@ -152,7 +152,7 @@ public class App {
 
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
 		FileWriter writer = new FileWriter(folderName
-				+ "Analysis_Results/Shapes/Results.txt");
+				+ "Analysis_Results/Shapes/ShapesResults.txt");
 
 		int index = 0;
 
