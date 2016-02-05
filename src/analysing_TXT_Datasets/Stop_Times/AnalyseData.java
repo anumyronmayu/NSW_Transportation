@@ -16,16 +16,65 @@ import utilities.Utilities;
 
 public class AnalyseData {
 
-	public List<Stop_Times> getStopTimesList() throws IOException, ParseException {
-		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified.csv";
-		List<String> stopTimesFileLines = Utilities.readFile(
-				stops_times_CSV_file, true);
+	public int[] arrivalDepartureTimeDistribution(String folderName,
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
+			List<String> tripIdListForEachType, String typeShort)
+			throws IOException {
 
-		AnalyseData analyseData = new AnalyseData();
-		List<Stop_Times> stopTimesList = analyseData
-				.parseStrLines(stopTimesFileLines);
+		int[] arrivalDepartureTimeDistributionArray = new int[144];
+		for (int i = 0; i < 144; i++) {
+			arrivalDepartureTimeDistributionArray[i] = 0;
+		}
 
-		return stopTimesList;
+		for (String tripId : tripIdListForEachType) {
+			ArrayList<Stop_Times> stopTimesList = tripIdToListOfStopTimesMap
+					.get(tripId);
+
+			Stop_Times stopTimesFirst = stopTimesList.get(0);
+			Stop_Times stopTimesLast = stopTimesList
+					.get(stopTimesList.size() - 1);
+
+			Date arrivalTime = stopTimesFirst.getArrival_time();
+			int minsArrival = (int) (arrivalTime.getTime() / 1000 / 60 + 600);
+			int indexArrival = (minsArrival / 10) % 144;
+
+			Date departureTime = stopTimesLast.getDeparture_time();
+			int minsDeparture = (int) (departureTime.getTime() / 1000 / 60 + 600);
+			int indexDeparture = (minsDeparture / 10) % 144;
+
+			if (indexArrival < indexDeparture) {
+				for (int i = indexArrival; i <= indexDeparture; i++) {
+					arrivalDepartureTimeDistributionArray[i]++;
+				}
+			} else {
+				for (int i = indexArrival; i <= arrivalDepartureTimeDistributionArray.length - 1; i++) {
+					arrivalDepartureTimeDistributionArray[i]++;
+				}
+				for (int i = 0; i <= indexDeparture; i++) {
+					arrivalDepartureTimeDistributionArray[i]++;
+				}
+			}
+		}
+
+		Utilities
+				.makeDir(folderName
+						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution");
+
+		FileWriter writer = new FileWriter(
+				folderName
+						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution/"
+						+ typeShort + ".txt");
+
+		writer.write("\"Timeslot\",\"Quantity\"\n");
+
+		for (int i = 0; i < 144; i++) {
+			writer.write("\"" + i + "\"," + "\""
+					+ arrivalDepartureTimeDistributionArray[i] + "\"\n");
+		}
+
+		writer.close();
+
+		return arrivalDepartureTimeDistributionArray;
 	}
 
 	public void analysingATypeOfNetwork(String folderName,
@@ -371,6 +420,35 @@ public class AnalyseData {
 		return routeNumberToOperatorNumberMap;
 	}
 
+	public List<Stop_Times> getStopTimesList() throws IOException,
+			ParseException {
+		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified.csv";
+		List<String> stopTimesFileLines = Utilities.readFile(
+				stops_times_CSV_file, true);
+
+		AnalyseData analyseData = new AnalyseData();
+		List<Stop_Times> stopTimesList = analyseData
+				.parseStrLines(stopTimesFileLines);
+
+		return stopTimesList;
+	}
+
+	public HashMap<String, String> mapStopIdToTripId(
+			List<Stop_Times> stopTimesList) {
+
+		HashMap<String, String> stopIdToTripIdMap = new HashMap<String, String>();
+
+		for (Stop_Times stopTimes : stopTimesList) {
+			if (stopIdToTripIdMap.get(stopTimes.getStop_id()) == null) {
+				stopIdToTripIdMap.put(stopTimes.getStop_id(),
+						stopTimes.getTrip_id());
+			}
+		}
+
+		return stopIdToTripIdMap;
+
+	}
+
 	// trip_id => color
 	public HashMap<String, String> mapTripIdToColor(
 			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
@@ -502,22 +580,6 @@ public class AnalyseData {
 		}
 
 		return stopTimesList;
-
-	}
-
-	public HashMap<String, String> mapStopIdToTripId(
-			List<Stop_Times> stopTimesList) {
-
-		HashMap<String, String> stopIdToTripIdMap = new HashMap<String, String>();
-
-		for (Stop_Times stopTimes : stopTimesList) {
-			if (stopIdToTripIdMap.get(stopTimes.getStop_id()) == null) {
-				stopIdToTripIdMap.put(stopTimes.getStop_id(),
-						stopTimes.getTrip_id());
-			}
-		}
-
-		return stopIdToTripIdMap;
 
 	}
 }

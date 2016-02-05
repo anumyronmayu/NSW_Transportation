@@ -163,28 +163,18 @@ public class App {
 				System.out.println("No Such Type!!!");
 			}
 		}
-
-		// Analyzing SydneyBusesNetwork
+		
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
 
+		/*
+		for (int i = 0; i < typeList.size(); i++) {
+			obj2.arrivalDepartureTimeDistribution(folderName, tripIdToListOfStopTimesMap, allTransportationNetworks.get(i), typeListShort.get(i));
+		}
+		*/
+		
 		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = new HashMap<String, List<Double>>();
 		HashMap<String, String> routeNumberToOperatorNumberMap = new HashMap<String, String>();
 
-		for (int i = 0; i < typeList.size(); i++) {
-			routeNumberToListOfSpeedMap = obj2.classifyRouteNumber(
-					tripIdToListOfStopTimesMap,
-					allTransportationNetworks.get(i));
-
-			routeNumberToOperatorNumberMap = obj2
-					.getRouteNumberToOperatorNumberMap(
-							tripIdToListOfStopTimesMap,
-							allTransportationNetworks.get(i));
-
-			obj2.calculateAverageSpeed(folderName, typeList.get(i),
-					routeNumberToListOfSpeedMap, routeNumberToOperatorNumberMap);
-		}
-
-		/*
 		for (int i = 0; i < typeList.size(); i++) {
 			routeNumberToListOfSpeedMap = obj2.classifyRouteNumber(
 					tripIdToListOfStopTimesMap,
@@ -199,7 +189,24 @@ public class App {
 					typeListShort.get(i), routeNumberToListOfSpeedMap,
 					routeNumberToOperatorNumberMap, 0.5);
 		}
+		
+		/*
+		for (int i = 0; i < typeList.size(); i++) {
+			routeNumberToListOfSpeedMap = obj2.classifyRouteNumber(
+					tripIdToListOfStopTimesMap,
+					allTransportationNetworks.get(i));
 
+			routeNumberToOperatorNumberMap = obj2
+					.getRouteNumberToOperatorNumberMap(
+							tripIdToListOfStopTimesMap,
+							allTransportationNetworks.get(i));
+
+			obj2.calculateAverageSpeed(folderName, typeList.get(i),
+					routeNumberToListOfSpeedMap, routeNumberToOperatorNumberMap);
+		}
+		*/
+		
+		/*
 		for (int i = 0; i < typeList.size(); i++) {
 			obj2.analysingATypeOfNetwork(folderName,
 					tripIdToListOfStopTimesMap,
