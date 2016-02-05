@@ -16,67 +16,6 @@ import utilities.Utilities;
 
 public class AnalyseData {
 
-	public int[] arrivalDepartureTimeDistribution(String folderName,
-			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
-			List<String> tripIdListForEachType, String typeShort)
-			throws IOException {
-
-		int[] arrivalDepartureTimeDistributionArray = new int[144];
-		for (int i = 0; i < 144; i++) {
-			arrivalDepartureTimeDistributionArray[i] = 0;
-		}
-
-		for (String tripId : tripIdListForEachType) {
-			ArrayList<Stop_Times> stopTimesList = tripIdToListOfStopTimesMap
-					.get(tripId);
-
-			Stop_Times stopTimesFirst = stopTimesList.get(0);
-			Stop_Times stopTimesLast = stopTimesList
-					.get(stopTimesList.size() - 1);
-
-			Date arrivalTime = stopTimesFirst.getArrival_time();
-			int minsArrival = (int) (arrivalTime.getTime() / 1000 / 60 + 600);
-			int indexArrival = (minsArrival / 10) % 144;
-
-			Date departureTime = stopTimesLast.getDeparture_time();
-			int minsDeparture = (int) (departureTime.getTime() / 1000 / 60 + 600);
-			int indexDeparture = (minsDeparture / 10) % 144;
-
-			if (indexArrival < indexDeparture) {
-				for (int i = indexArrival; i <= indexDeparture; i++) {
-					arrivalDepartureTimeDistributionArray[i]++;
-				}
-			} else {
-				for (int i = indexArrival; i <= arrivalDepartureTimeDistributionArray.length - 1; i++) {
-					arrivalDepartureTimeDistributionArray[i]++;
-				}
-				for (int i = 0; i <= indexDeparture; i++) {
-					arrivalDepartureTimeDistributionArray[i]++;
-				}
-			}
-		}
-
-		Utilities
-				.makeDir(folderName
-						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution");
-
-		FileWriter writer = new FileWriter(
-				folderName
-						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution/"
-						+ typeShort + ".txt");
-
-		writer.write("\"Timeslot\",\"Quantity\"\n");
-
-		for (int i = 0; i < 144; i++) {
-			writer.write("\"" + i + "\"," + "\""
-					+ arrivalDepartureTimeDistributionArray[i] + "\"\n");
-		}
-
-		writer.close();
-
-		return arrivalDepartureTimeDistributionArray;
-	}
-
 	public void analysingATypeOfNetwork(String folderName,
 			HashMap<String, ArrayList<Stop_Times>> map,
 			List<String> tripIdForEachType, String type) throws IOException {
@@ -208,7 +147,69 @@ public class AnalyseData {
 
 	}
 
-	public void calculateAverageSpeed(String folderName, String type,
+	public int[] arrivalDepartureTimeDistribution(String folderName,
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
+			List<String> tripIdListForEachType, String typeShort)
+			throws IOException {
+
+		int[] arrivalDepartureTimeDistributionArray = new int[144];
+		for (int i = 0; i < 144; i++) {
+			arrivalDepartureTimeDistributionArray[i] = 0;
+		}
+
+		for (String tripId : tripIdListForEachType) {
+			ArrayList<Stop_Times> stopTimesList = tripIdToListOfStopTimesMap
+					.get(tripId);
+
+			Stop_Times stopTimesFirst = stopTimesList.get(0);
+			Stop_Times stopTimesLast = stopTimesList
+					.get(stopTimesList.size() - 1);
+
+			Date arrivalTime = stopTimesFirst.getArrival_time();
+			int minsArrival = (int) (arrivalTime.getTime() / 1000 / 60 + 600);
+			int indexArrival = (minsArrival / 10) % 144;
+
+			Date departureTime = stopTimesLast.getDeparture_time();
+			int minsDeparture = (int) (departureTime.getTime() / 1000 / 60 + 600);
+			int indexDeparture = (minsDeparture / 10) % 144;
+
+			if (indexArrival < indexDeparture) {
+				for (int i = indexArrival; i <= indexDeparture; i++) {
+					arrivalDepartureTimeDistributionArray[i]++;
+				}
+			} else {
+				for (int i = indexArrival; i <= arrivalDepartureTimeDistributionArray.length - 1; i++) {
+					arrivalDepartureTimeDistributionArray[i]++;
+				}
+				for (int i = 0; i <= indexDeparture; i++) {
+					arrivalDepartureTimeDistributionArray[i]++;
+				}
+			}
+		}
+
+		Utilities
+				.makeDir(folderName
+						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution");
+
+		FileWriter writer = new FileWriter(
+				folderName
+						+ "Analysis_Results/Stop_Times/ArrivalDepartureTimeDistribution/"
+						+ typeShort + ".txt");
+
+		writer.write("\"Timeslot\",\"Quantity\"\n");
+
+		for (int i = 0; i < 144; i++) {
+			writer.write("\"" + i + "\"," + "\""
+					+ arrivalDepartureTimeDistributionArray[i] + "\"\n");
+		}
+
+		writer.close();
+
+		return arrivalDepartureTimeDistributionArray;
+	}
+
+	public void calculateAverageSpeedPerOperatorRoute(String folderName,
+			String type,
 			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
 			HashMap<String, String> routeNumberToOperatorNumberMap)
 			throws IOException {
@@ -248,8 +249,114 @@ public class AnalyseData {
 		writer.close();
 	}
 
-	public void calculatePDFCurve(String folderName, String type,
-			String typeShort,
+	public void calculatePDFCurve(String folderName, String typeShort,
+			List<Double> speedListForEachType, double distance)
+			throws IOException {
+
+		Utilities.makeDir(folderName
+				+ "Analysis_Results/Stop_Times/Stop_Times_PDF_PerType");
+
+		DecimalFormat df = new DecimalFormat("#.##");
+
+		HashMap<Integer, Integer> indexToNumMap = new HashMap<Integer, Integer>();
+
+		double sMax = Double.MIN_VALUE;
+		double sMin = Double.MAX_VALUE;
+
+		// sMin, sMax
+		for (double d : speedListForEachType) {
+			if (d < sMin)
+				sMin = d;
+			if (d > sMax)
+				sMax = d;
+		}
+
+		int indexMax = 0;
+
+		for (double d : speedListForEachType) {
+			int index = (int) ((d - sMin) / distance);
+			if (index > indexMax) {
+				indexMax = index;
+			}
+			if (indexToNumMap.get(index) == null) {
+				indexToNumMap.put(index, 1);
+			} else {
+				indexToNumMap.put(index, indexToNumMap.get(index) + 1);
+			}
+		}
+
+		FileWriter writer = new FileWriter(folderName
+				+ "Analysis_Results/Stop_Times/Stop_Times_PDF_PerType/"
+				+ typeShort + ".txt");
+
+		writer.write("\"Speed\",\"Probability\"\n");
+
+		for (int i = 0; i <= indexMax; i++) {
+			double middle = sMin + i * distance + 0.5 * distance;
+			double probability;
+			if (indexToNumMap.get(i) == null) {
+				probability = 0.0;
+			} else {
+				probability = (double) indexToNumMap.get(i)
+						/ (double) speedListForEachType.size();
+			}
+			writer.write("\"" + df.format(middle) + "\",");
+			writer.write("\"" + probability + "\"");
+			writer.write("\n");
+		}
+
+		writer.close();
+
+	}
+
+	public List<Double> getSpeedListForEachType(
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
+			List<String> tripIdForEachType) {
+
+		List<Double> speedListForEachType = new ArrayList<Double>();
+
+		// trip id => average speed
+		for (String tripId : tripIdForEachType) {
+
+			ArrayList<Stop_Times> stop_times_group = tripIdToListOfStopTimesMap
+					.get(tripId);
+
+			// velocities for a trip id
+			ArrayList<Double> velocities = new ArrayList<Double>();
+
+			for (int i = 1; i < stop_times_group.size(); i++) {
+
+				double time = ((double) (stop_times_group.get(i)
+						.getArrival_time().getTime() - stop_times_group
+						.get(i - 1).getDeparture_time().getTime())) / 1000 / 60 / 60;// hour
+
+				if (time == 0) {
+					continue;
+				}
+
+				double d = (stop_times_group.get(i).getShape_dist_traveled() - stop_times_group
+						.get(i - 1).getShape_dist_traveled()) / 1000;
+				double v = d / time;
+				velocities.add(v);
+
+			}
+
+			double sumVelocity = 0;
+			for (double velocity : velocities) {
+				sumVelocity += velocity;
+			}
+			double averageSpeed = sumVelocity / velocities.size();
+
+			speedListForEachType.add(averageSpeed);
+
+		}
+
+		return speedListForEachType;
+
+	}
+
+	public void calculatePDFCurvePerOperatorRoute(String folderName,
+			String type, String typeShort,
 			HashMap<String, List<Double>> routeNumberToListOfSpeedMap,
 			HashMap<String, String> routeNumberToOperatorNumberMap,
 			double distance) throws IOException {
@@ -323,7 +430,7 @@ public class AnalyseData {
 	}
 
 	public HashMap<String, List<Double>> classifyRouteNumber(
-			HashMap<String, ArrayList<Stop_Times>> map,
+			HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap,
 			List<String> tripIdForEachType) {
 
 		// route number -> speed list
@@ -334,7 +441,8 @@ public class AnalyseData {
 		// Analyze
 		for (String s : tripIdForEachType) {
 
-			ArrayList<Stop_Times> stop_times_group = map.get(s);
+			ArrayList<Stop_Times> stop_times_group = tripIdToListOfStopTimesMap
+					.get(s);
 
 			// velocities for a trip id
 			ArrayList<Double> velocities = new ArrayList<Double>();

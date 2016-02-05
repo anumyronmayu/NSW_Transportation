@@ -166,12 +166,21 @@ public class App {
 		
 		String folderName = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/";
 
+		// calculate PDF curve per type
+		for (int i = 0; i < typeList.size(); i++) {
+			List<Double> speedListForEachType = obj2.getSpeedListForEachType(tripIdToListOfStopTimesMap, allTransportationNetworks.get(i));
+			obj2.calculatePDFCurve(folderName, typeListShort.get(i), speedListForEachType, 0.5);
+		}
+		
 		/*
+		// divide 24 hours into 144 timeslots, each timeslot is 10 minutes, calculate frequency of transportation for each type
 		for (int i = 0; i < typeList.size(); i++) {
 			obj2.arrivalDepartureTimeDistribution(folderName, tripIdToListOfStopTimesMap, allTransportationNetworks.get(i), typeListShort.get(i));
 		}
 		*/
 		
+		/*
+		// PDF of average speed per operator number, route number
 		HashMap<String, List<Double>> routeNumberToListOfSpeedMap = new HashMap<String, List<Double>>();
 		HashMap<String, String> routeNumberToOperatorNumberMap = new HashMap<String, String>();
 
@@ -185,12 +194,14 @@ public class App {
 							tripIdToListOfStopTimesMap,
 							allTransportationNetworks.get(i));
 
-			obj2.calculatePDFCurve(folderName, typeList.get(i),
+			obj2.calculatePDFCurvePerOperatorRoute(folderName, typeList.get(i),
 					typeListShort.get(i), routeNumberToListOfSpeedMap,
 					routeNumberToOperatorNumberMap, 0.5);
 		}
+		*/
 		
 		/*
+		// average speed for each operator number, route number
 		for (int i = 0; i < typeList.size(); i++) {
 			routeNumberToListOfSpeedMap = obj2.classifyRouteNumber(
 					tripIdToListOfStopTimesMap,
@@ -201,7 +212,7 @@ public class App {
 							tripIdToListOfStopTimesMap,
 							allTransportationNetworks.get(i));
 
-			obj2.calculateAverageSpeed(folderName, typeList.get(i),
+			obj2.calculateAverageSpeedPerOperatorRoute(folderName, typeList.get(i),
 					routeNumberToListOfSpeedMap, routeNumberToOperatorNumberMap);
 		}
 		*/
