@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import utilities.Utilities;
-import analysing_TXT_Datasets.Routes.AnalyseData;
 import analysing_TXT_Datasets.Routes.Routes;
 
 public class App {
@@ -17,42 +15,31 @@ public class App {
 	public static void main(String[] args) throws IOException, ParseException {
 
 		// route_id_part1 + maxVersion => type, color
-		String routes_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/routes.csv";
-		List<String> fileLines = Utilities.readFile(routes_CSV_file, true);
-
-		AnalyseData obj = new AnalyseData();
-		List<Routes> routesList = obj.parseStrLines(fileLines);
-
+		analysing_TXT_Datasets.Routes.AnalyseData obj1 = new analysing_TXT_Datasets.Routes.AnalyseData();
+		List<Routes> routesList = obj1.getRoutesList();
 		System.out.println(routesList.size());
 
-		HashMap<String, String> typeMapWithVersionNumber = obj
+		HashMap<String, String> typeMapWithVersionNumber = obj1
 				.getTypeMapWithVersionNumber(routesList);
-		HashMap<String, String> colorMapWithVersionNumber = obj
+		HashMap<String, String> colorMapWithVersionNumber = obj1
 				.getColorMapWithVersionNumber(routesList);
 
-		// parse Stop_Times
-		String stops_times_CSV_file = "/Users/Myron/Documents/2015_nswtransport/GTFS/full_greater_sydney_gtfs_static_csv/Analysis_Results/stop_times_modified.csv";
-		List<String> stopTimesFileLines = Utilities.readFile(
-				stops_times_CSV_file, true);
-
-		analysing_TXT_Datasets.Stop_Times.AnalyseData analyseData = new analysing_TXT_Datasets.Stop_Times.AnalyseData();
-		List<Stop_Times> stopTimesList = analyseData
-				.parseStrLines(stopTimesFileLines);
-
+		// get Stop_Times
+		analysing_TXT_Datasets.Stop_Times.AnalyseData obj2 = new analysing_TXT_Datasets.Stop_Times.AnalyseData();
+		List<Stop_Times> stopTimesList = obj2.getStopTimesList();
 		System.out.println(stopTimesList.size());
 
 		// Map trip id to list of stop times
-		HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap = analyseData
+		HashMap<String, ArrayList<Stop_Times>> tripIdToListOfStopTimesMap = obj2
 				.mapTripIdToStopTimesList(stopTimesList);
 
 		// trip_id => type
-		HashMap<String, String> tripIdToTypeMap = analyseData.mapTripIdToType(
+		HashMap<String, String> tripIdToTypeMap = obj2.mapTripIdToType(
 				tripIdToListOfStopTimesMap, typeMapWithVersionNumber);
 
 		// trip_id => color
-		HashMap<String, String> tripIdToColorMap = analyseData
-				.mapTripIdToColor(tripIdToListOfStopTimesMap,
-						colorMapWithVersionNumber);
+		HashMap<String, String> tripIdToColorMap = obj2.mapTripIdToColor(
+				tripIdToListOfStopTimesMap, colorMapWithVersionNumber);
 
 		// type, list of trip_id
 		List<String> listOfSydneyBusesNetwork = new ArrayList<String>();
@@ -184,40 +171,40 @@ public class App {
 		HashMap<String, String> routeNumberToOperatorNumberMap = new HashMap<String, String>();
 
 		for (int i = 0; i < typeList.size(); i++) {
-			routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(
+			routeNumberToListOfSpeedMap = obj2.classifyRouteNumber(
 					tripIdToListOfStopTimesMap,
 					allTransportationNetworks.get(i));
 
-			routeNumberToOperatorNumberMap = analyseData
+			routeNumberToOperatorNumberMap = obj2
 					.getRouteNumberToOperatorNumberMap(
 							tripIdToListOfStopTimesMap,
 							allTransportationNetworks.get(i));
 
-			analyseData
-					.calculateAverageSpeed(folderName, typeList.get(i),
-							routeNumberToListOfSpeedMap,
-							routeNumberToOperatorNumberMap);
+			obj2.calculateAverageSpeed(folderName, typeList.get(i),
+					routeNumberToListOfSpeedMap, routeNumberToOperatorNumberMap);
 		}
 
-		/*for (int i = 0; i < typeList.size(); i++) {
-			routeNumberToListOfSpeedMap = analyseData.classifyRouteNumber(
+		/*
+		for (int i = 0; i < typeList.size(); i++) {
+			routeNumberToListOfSpeedMap = obj2.classifyRouteNumber(
 					tripIdToListOfStopTimesMap,
 					allTransportationNetworks.get(i));
 
-			routeNumberToOperatorNumberMap = analyseData
+			routeNumberToOperatorNumberMap = obj2
 					.getRouteNumberToOperatorNumberMap(
 							tripIdToListOfStopTimesMap,
 							allTransportationNetworks.get(i));
 
-			analyseData.calculatePDFCurve(folderName, typeList.get(i),
+			obj2.calculatePDFCurve(folderName, typeList.get(i),
 					typeListShort.get(i), routeNumberToListOfSpeedMap,
 					routeNumberToOperatorNumberMap, 0.5);
-		}*/
+		}
 
-		/*for (int i = 0; i < typeList.size(); i++) {
-			analyseData.analysingATypeOfNetwork(folderName,
+		for (int i = 0; i < typeList.size(); i++) {
+			obj2.analysingATypeOfNetwork(folderName,
 					tripIdToListOfStopTimesMap,
 					allTransportationNetworks.get(i), typeList.get(i));
-		}*/
+		}
+		*/
 	}
 }
